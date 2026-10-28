@@ -29,6 +29,10 @@ const promptPresets = require('../services/translation/prompt-presets');
 const { runAutoDetectAndPersist } = require('../services/textractor-path-detect');
 const UpdateChecker = require('../services/update-checker');
 
+// v1.0.14: reutilizar conexiones HTTP(S) — Electron 28 (Node 18) abre una nueva por llamada.
+// Ver src/services/http-keepalive.js. Va antes de cualquier pedido de red.
+require('../services/http-keepalive').instalar();
+
 // Configure logging
 // v3.10.0: Log to %appdata%/Tuhua Translator/logs/main.log (rotating).
 // Users can share this file for debugging.
