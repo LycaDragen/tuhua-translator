@@ -177,7 +177,7 @@ La memoria de traducción almacena pares de traducciones previas y los reutiliza
 - **[Tesseract.js](https://github.com/naptha/tesseract.js)** — Motor OCR por defecto (WebAssembly)
 - **[PaddleOCR (PP-OCRv5)](https://github.com/PaddlePaddle/PaddleOCR)** vía **[ONNX Runtime](https://github.com/microsoft/onnxruntime)** — OCR alternativo, corre local sin Python
 - **[electron-store](https://github.com/sindresorhus/electron-store)** — Persistencia de configuración
-- **[Tailwind CSS](https://tailwindcss.com/)** — Framework CSS utilitario (via CDN)
+- **[Tailwind CSS](https://tailwindcss.com/)** — Framework CSS utilitario (v3.4.17, incluido en `renderer/main/vendor/`; la interfaz no necesita internet para verse)
 
 ---
 

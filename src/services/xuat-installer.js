@@ -21,7 +21,7 @@ const path = require('path');
 const os = require('os');
 const { EventEmitter } = require('events');
 const axios = require('axios');
-const { execSync } = require('child_process');
+const { execFile } = require('child_process');
 const { detectGameEngine } = require('./game-engine-detect');
 
 class XuatInstaller extends EventEmitter {
@@ -897,35 +897,72 @@ class XuatInstaller extends EventEmitter {
    * @param {string} destDir - Destination directory
    * @returns {Promise<void>}
    */
+  /**
+   * v1.0.13: cómo se invoca PowerShell para extraer un zip, SIN interpolar
+   * ninguna ruta en el texto del comando.
+   *
+   * Antes se armaba `Expand-Archive -Path '${zipPath}' ...` y sólo se
+   * duplicaba la comilla simple ASCII. Eso fallaba de tres maneras
+   * distintas, y las tres se resuelven con el mismo cambio:
+   *
+   *  - PowerShell trata como comillas simples también ‘ ’ ‚ ‛ (U+2018..201B),
+   *    así que una ruta con una de ellas —un usuario de Windows llamado
+   *    "D’Angelo" es lo más común— cerraba la cadena antes de tiempo. En el
+   *    mejor caso la extracción fallaba; en el peor, lo que seguía a la
+   *    comilla se ejecutaba como código.
+   *  - `-Path` interpreta `[` y `]` como comodines, así que "Juan [PC]" no
+   *    encontraba su propio archivo. `-LiteralPath` los toma tal cual.
+   *  - Había DOS capas de comillas anidadas (la de cmd y la de PowerShell),
+   *    y la de `"` sólo se escapaba para una de las dos.
+   *
+   * Las rutas que llegan acá hoy salen del directorio temporal de la app más
+   * nombres fijos (`BepInEx5.zip`), no de la carpeta del juego, así que no
+   * había un vector externo; el riesgo era el nombre de usuario de Windows
+   * de quien instala. Aun así: un texto de comando constante no tiene nada
+   * que inyectar, y es mucho más fácil de razonar que un escapado correcto.
+   *
+   * Los valores viajan por variables de entorno, que PowerShell lee con
+   * `$env:` sin pasar por ningún parser de comillas.
+   *
+   * @param {string} zipPath
+   * @param {string} destDir
+   * @returns {{file: string, args: string[], env: Object<string,string>}}
+   */
+  static buildExtractInvocation(zipPath, destDir) {
+    return {
+      file: 'powershell.exe',
+      args: [
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        // $ErrorActionPreference='Stop': sin esto Expand-Archive reporta
+        // algunos fallos como errores NO terminantes y el proceso sale con
+        // código 0 aunque no haya extraído nada.
+        "$ErrorActionPreference = 'Stop'; Expand-Archive -LiteralPath $env:TUHUA_ZIP -DestinationPath $env:TUHUA_DEST -Force"
+      ],
+      env: { TUHUA_ZIP: String(zipPath), TUHUA_DEST: String(destDir) }
+    };
+  }
+
   async _extractZip(zipPath, destDir) {
     if (os.platform() !== 'win32') {
       throw new Error('XUAT installer only supports Windows (Unity games require Windows).');
     }
 
+    const { file, args, env } = XuatInstaller.buildExtractInvocation(zipPath, destDir);
     return new Promise((resolve, reject) => {
-      try {
-        // Use PowerShell Expand-Archive for reliable zip extraction on Windows
-        const psCommand = `Expand-Archive -Path '${zipPath.replace(/'/g, "''")}' -DestinationPath '${destDir.replace(/'/g, "''")}' -Force`;
-        execSync(`powershell -NoProfile -Command "${psCommand.replace(/"/g, '\\"')}"`, {
-          timeout: 60000,
-          windowsHide: true
-        });
-        resolve();
-      } catch (err) {
-        // Fallback: try with a different quoting approach
-        try {
-          const escapedZip = zipPath.replace(/'/g, "''");
-          const escapedDest = destDir.replace(/'/g, "''");
-          const script = `Expand-Archive -Path '${escapedZip}' -DestinationPath '${escapedDest}' -Force`;
-          execSync(`powershell -NoProfile -Command "& { ${script} }"`, {
-            timeout: 60000,
-            windowsHide: true
-          });
+      execFile(
+        file,
+        args,
+        { env: { ...process.env, ...env }, timeout: 60000, windowsHide: true },
+        (err, _stdout, stderr) => {
+          if (err) {
+            const detail = String(stderr || '').trim() || err.message;
+            return reject(new Error(`Failed to extract zip: ${detail}`));
+          }
           resolve();
-        } catch (fallbackErr) {
-          reject(new Error(`Failed to extract zip: ${fallbackErr.message || err.message}`));
         }
-      }
+      );
     });
   }
 

@@ -1,5 +1,80 @@
 # Changelog
 
+## [1.0.14] — el idioma de origen de XUAT ya no se pierde al cambiar de perfil
+
+### Arreglado
+
+- **Al pasar de un perfil con origen «Auto-detectar» a uno de XUAT, el idioma de origen aparecía como
+  «Auto-detectar».** XUAT necesita un idioma de origen concreto (el juego traduce *desde* algo, y `auto` no
+  existe para él), así que ese valor no era válido y la opción ni siquiera se puede elegir a mano. La causa:
+  al cambiar de perfil, la interfaz ponía primero el idioma del perfil nuevo en el selector y *después*
+  guardaba «el idioma de XUAT» leyendo ese mismo selector. Salir de un perfil XUAT hacia uno con origen
+  `auto` guardaba `auto` como idioma de XUAT, y al volver aparecía ahí. Ahora el cambio de perfil no toca
+  el idioma de XUAT, y cada perfil recupera el suyo.
+- **Si tu configuración ya tenía `auto` guardado para XUAT** (porque te pasó con la versión anterior), se
+  corrige sola al abrir la app: pasa a Inglés, que es el valor por defecto de XUAT, y puedes cambiarlo.
+- **Volver desde XUAT a otro método podía dejar en el selector el idioma de origen de un perfil
+  anterior** y no el del perfil cargado. Mismo origen que el punto anterior, mismo arreglo.
+
+### Mejorado
+
+- **Cada texto nuevo tarda bastante menos en traducirse con motores en la nube.** Tuhua abría una conexión
+  HTTPS nueva en cada llamada (Electron 28 trae Node 18, que no reutiliza conexiones) y repetía el saludo
+  TLS completo antes de enviar nada. Ahora las conexiones se reutilizan. Medido contra DeepL desde el Node
+  de Electron, con 8 pedidos seguidos: ~780 ms por pedido antes, ~263 ms después. Se nota sobre todo con
+  XUAT, que manda los textos de uno en uno: en un juego con mucho texto en pantalla, cada línea nueva
+  esperaba más de un segundo. Aplica a todos los motores, no sólo a DeepL.
+
+### Interno
+
+- Banco nuevo `scripts/test-http-keepalive.js` (8 casos). Para ver el defecto original hay que correrlo con
+  el Node 18 de Electron (`ELECTRON_RUN_AS_NODE=1 <electron> scripts/test-http-keepalive.js`): el Node de
+  desarrollo (22) ya reutiliza conexiones y no lo reproduce.
+- Banco nuevo `scripts/test-xuat-source-lang.js` (7 casos; cada defecto se verificó reintroduciéndolo). La
+  reproducción del error se hizo en Electron real: perfil OCR con `auto` → perfil XUAT → de vuelta, y con
+  un `config.json` ya corrompido.
+
+## [1.0.13] — revisión de seguridad
+
+Salió de una auditoría de seguridad del código. Cada hallazgo se verificó contra el programa real antes de
+tocar nada: varios eran ciertos, uno resultó más serio de lo que decía el informe, y otros se dejaron como
+están a propósito.
+
+### Arreglado
+
+- **La ventana principal descargaba y ejecutaba un script de internet en cada arranque.** Era Tailwind, que
+  se cargaba desde `cdn.tailwindcss.com`, y esa es justo la ventana que tiene acceso a los ajustes y a tus
+  claves de API. Un compromiso de ese servidor habría sido código ajeno corriendo ahí. Además, **sin
+  internet** —o con la caché de Electron borrada— la interfaz salía **sin un solo estilo** y quedaba
+  inutilizable (se reprodujo con un perfil limpio); sólo funcionaba porque Electron guardaba el script en
+  caché. Ahora va incluido en la aplicación, con la misma versión exacta que servía el CDN: se comparó
+  la interfaz completa en 24 estados, en tema claro y oscuro, y es idéntica.
+
+- **El servidor de XUAT atendía a cualquiera.** Escuchaba en todas las interfaces y respondía con
+  `Access-Control-Allow-Origin: *`, de modo que otro equipo de tu red, o cualquier página web abierta en tu
+  navegador, podía pedirle traducciones y gastar la cuota de tu motor (DeepL, OpenAI…). Ahora sólo atiende
+  al propio equipo y rechaza lo que venga de un navegador. No cambió ni el puerto ni la dirección que XUAT
+  ya tiene escrita en tus juegos, así que **no hay que reinstalar nada**. Los rechazos quedan en el log.
+
+- **No se podía instalar XUAT con un nombre de usuario de Windows con comilla tipográfica (`D’Angelo`).**
+  El comando de extracción armaba las rutas dentro de un texto que PowerShell interpretaba, y esa comilla lo
+  cortaba antes de tiempo (en las pruebas, PowerShell llegó a ejecutar como comando lo que seguía). Ahora las
+  rutas viajan aparte del comando.
+
+- **Las ventanas de la aplicación ya no pueden navegar a otra página ni abrir ventanas nuevas.** Nada de la
+  aplicación lo hace, así que no cambia nada visible; es una barrera por si algún día algo lo intentara
+  dentro de una ventana con acceso a los ajustes.
+
+- **Cinco dependencias con avisos de seguridad se actualizaron** dentro de su rango (`axios`, `js-yaml`,
+  `fast-uri`, `form-data`, `follow-redirects`), más `adm-zip`, que sólo usa el instalador de onnxruntime. Los
+  avisos de producción pasaron de 46 a 0. La traducción por red, el guardado de ajustes entre reinicios y el
+  `latest.yml` real del release se probaron con las versiones nuevas.
+
+### Cambiado
+
+- Una cadena de prueba en el código fuente era el comienzo de una clave de API real (ya expirada y
+  truncada). Se reemplazó por una falsa de la misma forma.
+
 ## [1.0.12] — el OCR mide el cambio por zonas, no sobre todo el recuadro
 
 La v1.0.10 mejoró mucho la detección de texto nuevo, pero seguía perdiendo casos. Éste es el

@@ -522,7 +522,19 @@
             // path that painted the badge WITHOUT going through the derived
             // state (it would have shown 'ocr' even if translationActive
             // were false, for example).
-            setInputMethod(savedInputMethod);
+            // v1.0.14: init() ya puso en el selector de origen el idioma del
+            // perfil que se acaba de cargar (más arriba), y setInputMethod()
+            // hace su intercambio XUAT <-> resto leyendo ESE selector. Al
+            // salir de un perfil XUAT hacia uno con origen "auto" leía "auto",
+            // lo guardaba como xuatSourceLang y XUAT quedaba con un idioma que
+            // no admite. Mientras se hidrata, el intercambio no captura ni
+            // persiste nada: los valores correctos se fijan justo después.
+            hydratingLanguages = true;
+            try {
+                setInputMethod(savedInputMethod);
+            } finally {
+                hydratingLanguages = false;
+            }
 
             // Load tabs data
             loadGlossary();
@@ -538,20 +550,31 @@
             // v3.11.21: Initialize separate language stores for XUAT vs. global methods.
             // The global language selectors are shared — when XUAT is active, "auto" is hidden
             // and values are saved to xuatSourceLang/xuatTargetLang instead of sourceLang/targetLang.
-            xuatSavedSourceLang = settings.xuatSourceLang || 'en';
+            xuatSavedSourceLang = sanitizeXuatSourceLang(settings.xuatSourceLang);
             xuatSavedTargetLang = settings.xuatTargetLang || 'es';
             globalSavedSourceLang = settings.sourceLang || 'auto';
             globalSavedTargetLang = settings.targetLang || 'es';
+            // Un config guardado por la versión anterior puede traer "auto":
+            // se corrige en disco también, para que el main no lo lea.
+            if (settings.xuatSourceLang !== xuatSavedSourceLang) {
+                api.saveSettings({ xuatSourceLang: xuatSavedSourceLang });
+            }
 
-            // If the current input method is XUAT, apply XUAT language values and hide "auto"
-            if (savedInputMethod === 'xuat') {
+            // v1.0.14: los selectores se fijan acá, según el método, y no se
+            // dejan a lo que haya dejado el intercambio de setInputMethod().
+            {
                 const sourceLangEl = document.getElementById('source-lang');
                 const autoOption = document.getElementById('source-lang-auto');
-                // Hide "auto" option for XUAT
-                if (autoOption) autoOption.style.display = 'none';
-                // Apply XUAT values to the global selectors
-                sourceLangEl.value = xuatSavedSourceLang;
-                document.getElementById('target-lang').value = xuatSavedTargetLang;
+                if (savedInputMethod === 'xuat') {
+                    // Hide "auto" option for XUAT; apply XUAT values to the global selectors
+                    if (autoOption) autoOption.style.display = 'none';
+                    sourceLangEl.value = xuatSavedSourceLang;
+                    document.getElementById('target-lang').value = xuatSavedTargetLang;
+                } else {
+                    if (autoOption) autoOption.style.display = '';
+                    sourceLangEl.value = normalizeSourceLang(globalSavedSourceLang);
+                    document.getElementById('target-lang').value = globalSavedTargetLang;
+                }
             }
 
             // If input method is XUAT, check server status and restore connected game
@@ -1250,6 +1273,13 @@
         let xuatSavedSourceLang = 'en';
         let xuatSavedTargetLang = 'es';
         let previousInputMethod = null;
+        // v1.0.14: true mientras init() hidrata desde un perfil/ajustes. Ver su uso.
+        let hydratingLanguages = false;
+
+        // XUAT necesita un idioma de origen concreto: nunca "auto" ni vacío.
+        function sanitizeXuatSourceLang(code) {
+            return (!code || code === 'auto') ? 'en' : code;
+        }
 
         function setInputMethod(method) {
             currentInputMethod = method;
@@ -1299,23 +1329,19 @@
 
             if (method === 'xuat') {
                 // Switching TO XUAT: save current values to global, load XUAT values, hide "auto"
-                if (previousInputMethod && previousInputMethod !== 'xuat' && inputMethodInitialized) {
+                if (previousInputMethod && previousInputMethod !== 'xuat' && inputMethodInitialized && !hydratingLanguages) {
                     globalSavedSourceLang = sourceLangEl.value;
                     globalSavedTargetLang = document.getElementById('target-lang').value;
                 }
                 // Hide "auto" option for XUAT
                 if (autoOption) autoOption.style.display = 'none';
-                // If current value is "auto", switch to XUAT default
-                if (sourceLangEl.value === 'auto') {
-                    sourceLangEl.value = xuatSavedSourceLang || 'en';
-                }
-                // Restore XUAT-specific values if available
-                if (xuatSavedSourceLang) sourceLangEl.value = xuatSavedSourceLang;
+                // Restore XUAT-specific values (never "auto": XUAT can't take it)
+                sourceLangEl.value = sanitizeXuatSourceLang(xuatSavedSourceLang);
                 if (xuatSavedTargetLang) document.getElementById('target-lang').value = xuatSavedTargetLang;
             } else {
                 // Switching AWAY from XUAT: save XUAT values, restore global values, show "auto"
-                if (previousInputMethod === 'xuat' && inputMethodInitialized) {
-                    xuatSavedSourceLang = sourceLangEl.value;
+                if (previousInputMethod === 'xuat' && inputMethodInitialized && !hydratingLanguages) {
+                    xuatSavedSourceLang = sanitizeXuatSourceLang(sourceLangEl.value);
                     xuatSavedTargetLang = document.getElementById('target-lang').value;
                     // Also persist to store and update AutoTranslatorConfig.ini
                     api.saveSettings({ xuatSourceLang: xuatSavedSourceLang, xuatTargetLang: xuatSavedTargetLang });

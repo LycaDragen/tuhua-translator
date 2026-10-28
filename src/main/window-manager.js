@@ -13,6 +13,8 @@
  * v3.13.06: No changes to window-manager in this version.
  */
 const { BrowserWindow, screen } = require('electron');
+// v1.0.13: ver navigation-guard.js — bloquea navegación y ventanas nuevas.
+const { endurecerVentana } = require('./navigation-guard');
 const path = require('path');
 
 const RENDERER_BASE = path.join(__dirname, '..', '..', 'renderer');
@@ -159,6 +161,7 @@ class WindowManager {
       backgroundColor: '#0f172a',
       show: false
     });
+    endurecerVentana(this.mainWindow);
 
     this.mainWindow.loadFile(path.join(RENDERER_BASE, 'main', 'index.html'));
     this.mainWindow.once('ready-to-show', () => {
@@ -236,6 +239,7 @@ class WindowManager {
         preload: path.join(__dirname, '..', 'preload', 'overlay-preload.js')
       }
     });
+    endurecerVentana(this.outputOverlay);
 
     this.outputOverlay.loadFile(path.join(RENDERER_BASE, 'output-overlay', 'index.html'));
     this.outputOverlay.setAlwaysOnTop(true, 'screen-saver');
@@ -442,6 +446,7 @@ class WindowManager {
         preload: path.join(__dirname, '..', 'preload', 'overlay-preload.js')
       }
     });
+    endurecerVentana(this.captureArea);
 
     this.captureArea.loadFile(path.join(RENDERER_BASE, 'capture-area', 'index.html'));
     this.captureArea.setAlwaysOnTop(true, 'screen-saver');
@@ -597,6 +602,7 @@ class WindowManager {
         preload: path.join(__dirname, '..', 'preload', 'overlay-preload.js')
       }
     });
+    endurecerVentana(win);
     win.setAlwaysOnTop(true, 'screen-saver');
     win.loadFile(path.join(RENDERER_BASE, 'word-save-prompt', 'index.html'));
     win.once('ready-to-show', () => { win.show(); win.moveTop(); });

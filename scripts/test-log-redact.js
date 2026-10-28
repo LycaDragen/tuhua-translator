@@ -21,7 +21,7 @@ const { makeCheckRegistry, run } = require('./lib/bench.js');
 const { check, CHECKS } = makeCheckRegistry();
 
 /** La key real del log, ya expirada, cortada como la cortó `substring(0, 60)`. */
-const KEY_DEL_LOG = 'sk-ant-api03-uWnRhuqD0NVfL4fLaJ4X2N5-P4s1yk6grvOFsTX3ZyfyxBq';
+const KEY_DEL_LOG = 'sk-ant-api03-FALSAFALSA-NOUSAR-0123456789-abcdefghijklmnopqr';
 
 const noContiene = (salida, secreto) => !salida.includes(secreto);
 
@@ -29,7 +29,7 @@ const noContiene = (salida, secreto) => !salida.includes(secreto);
 check('el-caso-reportado-la-linea-exacta-del-log', () => {
   const linea = `[Tuhua] _handleText: srcLang=en, tgtLang=es, engine=local-llm, active=false, inputMethod=clipboard, text="${KEY_DEL_LOG}..."`;
   const out = redactSecrets(linea);
-  const pass = noContiene(out, 'uWnRhuqD0NVfL4fLaJ4X2N5') && out.includes('sk-ant-api03-[REDACTADO]') && out.includes('inputMethod=clipboard');
+  const pass = noContiene(out, 'FALSAFALSA-NOUSAR') && out.includes('sk-ant-api03-[REDACTADO]') && out.includes('inputMethod=clipboard');
   return { pass, actual: out };
 }, 'Log 2026-08-30 04:13:31, textual. El resto de la línea (que es el diagnóstico) tiene que sobrevivir intacto.');
 
@@ -72,7 +72,7 @@ check('la-red-de-seguridad-tapa-una-credencial-sin-prefijo-conocido', () => {
 
 check('la-redaccion-sobrevive-a-un-texto-con-varias-claves', () => {
   const out = redactSecrets(`una ${KEY_DEL_LOG} y otra sk-proj-AbCdEfGhIjKlMnOpQrSt0123`);
-  return { pass: noContiene(out, 'uWnRhuqD') && noContiene(out, 'AbCdEfGhIjKlMnOpQrSt'), actual: out };
+  return { pass: noContiene(out, 'FALSAFALSA-NOUSAR') && noContiene(out, 'AbCdEfGhIjKlMnOpQrSt'), actual: out };
 });
 
 // ─── NO arruinar el log ──────────────────────────────────────────────────
@@ -118,12 +118,12 @@ check('un-id-de-modelo-o-un-hash-corto-no-se-tocan', () => {
 // ─── El transform de electron-log ────────────────────────────────────────
 check('el-transform-redacta-cada-string-del-arreglo', () => {
   const out = redactFileTransform({ data: ['[Tuhua] text:', KEY_DEL_LOG, 42, null] });
-  return { pass: Array.isArray(out) && noContiene(out[1], 'uWnRhuqD') && out[2] === 42 && out[3] === null, actual: out };
+  return { pass: Array.isArray(out) && noContiene(out[1], 'FALSAFALSA-NOUSAR') && out[2] === 42 && out[3] === null, actual: out };
 }, 'electron-log pasa `data` como arreglo: los no-strings (números, objetos ya serializados) tienen que salir tal cual.');
 
 check('el-transform-acepta-un-string-suelto', () => {
   const out = redactFileTransform({ data: `key=${KEY_DEL_LOG}` });
-  return { pass: typeof out === 'string' && noContiene(out, 'uWnRhuqD'), actual: out };
+  return { pass: typeof out === 'string' && noContiene(out, 'FALSAFALSA-NOUSAR'), actual: out };
 }, 'Depende de qué devuelva el último transform de la librería (`toString`) — se soportan las dos formas en vez de asumir una.');
 
 check('el-transform-nunca-tira', () => {
