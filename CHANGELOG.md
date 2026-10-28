@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.0.15] — en Linux con Wayland, el OCR ya no pide elegir pantalla en cada captura
+
+### Arreglado
+
+- **En Linux con una sesión Wayland (KDE Plasma, GNOME…), el OCR abría el diálogo «compartir pantalla» en
+  cada captura.** Lo reportó un usuario en CachyOS. La causa, verificada ejecutando Electron 28: bajo
+  Wayland, Chromium captura la pantalla por el portal del sistema (xdg-desktop-portal, PipeWire) y cada
+  llamada a `desktopCapturer.getSources()` abre una sesión nueva del portal; con tres llamadas seguidas
+  hubo tres contactos al portal. El OCR automático captura cada 3,5 s, de ahí un diálogo por captura (y
+  el aviso `La captura de pantalla no respondió en 8000ms` del log mientras nadie lo contestaba).
+  Ahora Tuhua apaga la captura por PipeWire (`--disable-features=WebRTCPipeWireCapturer`) y captura por
+  X11/XWayland, sin diálogo. Con la app real y una sesión Wayland simulada: antes 3 capturas fallidas y 6
+  contactos al portal; después 3 capturas correctas y 0.
+- **Límite conocido, a propósito:** por XWayland sólo se ven las ventanas X11, que es lo que usan los
+  juegos que corren con Proton o Wine. Un juego con ventana Wayland *nativa* saldría en negro; para ese caso
+  `TUHUA_CAPTURA_PORTAL=1 ./tuhua-translator-*.AppImage` deja el comportamiento anterior. En Windows, macOS
+  y sesiones X11 no cambia nada.
+- La solución de fondo —un solo flujo de PipeWire, un solo diálogo por sesión— no se hizo: no se puede
+  verificar sin un escritorio Wayland real.
+
+### Interno
+
+- Banco nuevo `scripts/test-linux-capture.js` (10 casos; cada defecto verificado reintroduciéndolo).
+
 ## [1.0.14] — el idioma de origen de XUAT ya no se pierde al cambiar de perfil
 
 ### Arreglado
