@@ -1,5 +1,46 @@
 # Changelog
 
+## [1.0.13] — revisión de seguridad
+
+Salió de una auditoría de seguridad del código. Cada hallazgo se verificó contra el programa real antes de
+tocar nada: varios eran ciertos, uno resultó más serio de lo que decía el informe, y otros se dejaron como
+están a propósito.
+
+### Arreglado
+
+- **La ventana principal descargaba y ejecutaba un script de internet en cada arranque.** Era Tailwind, que
+  se cargaba desde `cdn.tailwindcss.com`, y esa es justo la ventana que tiene acceso a los ajustes y a tus
+  claves de API. Un compromiso de ese servidor habría sido código ajeno corriendo ahí. Además, **sin
+  internet** —o con la caché de Electron borrada— la interfaz salía **sin un solo estilo** y quedaba
+  inutilizable (se reprodujo con un perfil limpio); sólo funcionaba porque Electron guardaba el script en
+  caché. Ahora va incluido en la aplicación, con la misma versión exacta que servía el CDN: se comparó
+  la interfaz completa en 24 estados, en tema claro y oscuro, y es idéntica.
+
+- **El servidor de XUAT atendía a cualquiera.** Escuchaba en todas las interfaces y respondía con
+  `Access-Control-Allow-Origin: *`, de modo que otro equipo de tu red, o cualquier página web abierta en tu
+  navegador, podía pedirle traducciones y gastar la cuota de tu motor (DeepL, OpenAI…). Ahora sólo atiende
+  al propio equipo y rechaza lo que venga de un navegador. No cambió ni el puerto ni la dirección que XUAT
+  ya tiene escrita en tus juegos, así que **no hay que reinstalar nada**. Los rechazos quedan en el log.
+
+- **No se podía instalar XUAT con un nombre de usuario de Windows con comilla tipográfica (`D’Angelo`).**
+  El comando de extracción armaba las rutas dentro de un texto que PowerShell interpretaba, y esa comilla lo
+  cortaba antes de tiempo (en las pruebas, PowerShell llegó a ejecutar como comando lo que seguía). Ahora las
+  rutas viajan aparte del comando.
+
+- **Las ventanas de la aplicación ya no pueden navegar a otra página ni abrir ventanas nuevas.** Nada de la
+  aplicación lo hace, así que no cambia nada visible; es una barrera por si algún día algo lo intentara
+  dentro de una ventana con acceso a los ajustes.
+
+- **Cinco dependencias con avisos de seguridad se actualizaron** dentro de su rango (`axios`, `js-yaml`,
+  `fast-uri`, `form-data`, `follow-redirects`), más `adm-zip`, que sólo usa el instalador de onnxruntime. Los
+  avisos de producción pasaron de 46 a 0. La traducción por red, el guardado de ajustes entre reinicios y el
+  `latest.yml` real del release se probaron con las versiones nuevas.
+
+### Cambiado
+
+- Una cadena de prueba en el código fuente era el comienzo de una clave de API real (ya expirada y
+  truncada). Se reemplazó por una falsa de la misma forma.
+
 ## [1.0.12] — el OCR mide el cambio por zonas, no sobre todo el recuadro
 
 La v1.0.10 mejoró mucho la detección de texto nuevo, pero seguía perdiendo casos. Éste es el

@@ -9,7 +9,13 @@
     <!-- v3.13.39: pure deriveBadgeStatus() decision table, shared with the
          Node bench at scripts/test-badge-state.js — see that file's header. -->
     <script src="../../src/services/badge-state.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- v1.0.13: Tailwind va LOCAL y con la versión fija. Antes era
+         <script src="https://cdn.tailwindcss.com"></script>, que ejecutaba
+         código remoto en la ventana que tiene expuesto window.tuhuaAPI
+         (ajustes y API keys), y dejaba la interfaz sin un solo estilo sin
+         internet o con la caché de Electron borrada. Son los mismos bytes que
+         sirve el CDN (redirige a /3.4.17); ver vendor/LICENSE-tailwindcss.txt. -->
+    <script src="vendor/tailwindcss-3.4.17.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',

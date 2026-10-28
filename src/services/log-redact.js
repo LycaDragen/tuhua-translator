@@ -10,7 +10,7 @@
  * Caso real (2026-08-30): el usuario copió su API key de Anthropic al
  * portapapeles con Tuhua abierto, y la key quedó escrita en `main.log`:
  *
- *   [Tuhua] _handleText: ... text="sk-ant-api03-uWnRhuqD0NVfL4fLaJ4X2N5-P4s..."
+ *   [Tuhua] _handleText: ... text="sk-ant-api03-FALSAFALSA-NOUSAR-0123456789-abcdefghijklmnopqr..."
  *
  * Después mandó ese log para diagnosticar otra cosa. Nadie hizo nada mal: el
  * flujo que el producto recomienda para reportar un problema es, tal como

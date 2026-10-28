@@ -28,7 +28,7 @@ const IpcHandlers = require(path.join('..', 'src', 'main', 'ipc-handlers.js'));
 const { makeCheckRegistry, run } = require('./lib/bench.js');
 const { check, CHECKS } = makeCheckRegistry();
 
-const KEY = 'sk-ant-api03-uWnRhuqD0NVfL4fLaJ4X2N5-P4s1yk6grvOFsTX3ZyfyxBq';
+const KEY = 'sk-ant-api03-FALSAFALSA-NOUSAR-0123456789-abcdefghijklmnopqr';
 
 /**
  * Instancia mínima: sólo los colaboradores que `_handleText` toca de verdad.

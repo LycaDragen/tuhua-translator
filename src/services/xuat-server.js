@@ -24,8 +24,105 @@
  */
 
 const http = require('http');
+const os = require('os');
 const url = require('url');
 const EventEmitter = require('events');
+
+/**
+ * v1.0.13: quién puede hablarle a este servidor.
+ *
+ * El servidor escucha en 0.0.0.0 (ver start()) y antes aceptaba a cualquiera
+ * que llegara: otro equipo de la red, o una página web abierta en el
+ * navegador del propio usuario, podía pedir traducciones y gastar la cuota
+ * del motor elegido (DeepL, OpenAI, …). Un juego Unity, en cambio, siempre
+ * es un proceso LOCAL y no manda ninguna de las cabeceras que mandan los
+ * navegadores. Las tres reglas de abajo explotan esa diferencia sin tocar
+ * ni el puerto, ni la URL que el instalador escribe en el juego, ni el
+ * `listen`:
+ *
+ *  1. El PAR debe ser local: su dirección tiene que ser de esta misma
+ *     máquina (loopback o cualquiera de sus interfaces). Se compara contra
+ *     las interfaces en cada pedido, no al arrancar, porque un adaptador de
+ *     VPN puede levantarse después.
+ *  2. La cabecera Host debe ser local. Corta el DNS rebinding: una página
+ *     hostil cuyo dominio resuelve a 127.0.0.1 llega con Host "evil.example".
+ *  3. No debe venir de un navegador: se rechaza cualquier pedido con `Origin`
+ *     o con `Sec-Fetch-Site` distinto de "none" ("none" = el usuario escribió
+ *     la URL a mano, p. ej. para mirar /status).
+ *
+ * Por qué NO un token en la URL, que sería lo más fuerte: el instalador ya
+ * escribió `http://127.0.0.1:8419/translate?...` en la config de los juegos
+ * ya instalados. Exigir un token los dejaría a todos sin traducir hasta
+ * reinstalar XUAT en cada uno.
+ *
+ * Por qué NO simplemente escuchar en 127.0.0.1: v3.11.9 pasó a 0.0.0.0
+ * porque "algunos juegos Unity no conectaban por loopback". La explicación
+ * no cierra (0.0.0.0 e IPv4-loopback son igual de alcanzables desde el mismo
+ * equipo), pero tampoco se puede descartar sin un juego real en Windows
+ * delante. Rechazar por el par mantiene el alcance local exacto y evita la
+ * apuesta.
+ */
+const LOCAL_HOSTNAMES = new Set(['localhost']);
+const IPV4_LITERAL = /^\d{1,3}(\.\d{1,3}){3}$/;
+
+function normalizarDireccion(addr) {
+  if (!addr) return '';
+  const a = String(addr).toLowerCase();
+  return a.startsWith('::ffff:') ? a.slice(7) : a; // IPv4 mapeada en IPv6
+}
+
+/** ¿Esta dirección pertenece a la propia máquina? */
+function esParLocal(remoteAddress, interfaces = os.networkInterfaces()) {
+  const a = normalizarDireccion(remoteAddress);
+  if (!a) return false;
+  if (a === '::1' || a === 'localhost' || a.startsWith('127.')) return true;
+  for (const lista of Object.values(interfaces || {})) {
+    for (const ni of lista || []) {
+      // fe80::1%eth0 → sin el sufijo de zona
+      if (normalizarDireccion(ni.address) === a.split('%')[0]) return true;
+    }
+  }
+  return false;
+}
+
+/** ¿La cabecera Host apunta a esta máquina, y no a un dominio ajeno? */
+function esHostLocal(hostHeader, hostname = os.hostname()) {
+  if (hostHeader === undefined || hostHeader === null || hostHeader === '') return true; // HTTP/1.0 sin Host
+  let h = String(hostHeader).trim().toLowerCase();
+  if (h.startsWith('[')) {
+    const fin = h.indexOf(']');
+    return fin !== -1; // literal IPv6: no hay DNS de por medio, no hay rebinding posible
+  }
+  h = h.split(':')[0];
+  if (LOCAL_HOSTNAMES.has(h)) return true;
+  if (IPV4_LITERAL.test(h)) return true; // literal: sin DNS, sin rebinding
+  return h !== '' && h === String(hostname).toLowerCase();
+}
+
+/**
+ * @returns {null | {reason: string, detail: string}} null = se atiende
+ */
+function evaluarPedido(req, env = {}) {
+  const interfaces = env.interfaces || os.networkInterfaces();
+  const hostname = env.hostname || os.hostname();
+  const headers = (req && req.headers) || {};
+  const peer = req && req.socket && req.socket.remoteAddress;
+
+  if (!esParLocal(peer, interfaces)) {
+    return { reason: 'par-remoto', detail: `conexión desde ${peer || 'dirección desconocida'}` };
+  }
+  if (!esHostLocal(headers.host, hostname)) {
+    return { reason: 'host-ajeno', detail: `Host: ${headers.host}` };
+  }
+  if (headers.origin !== undefined) {
+    return { reason: 'navegador', detail: `Origin: ${headers.origin}` };
+  }
+  const sfs = headers['sec-fetch-site'];
+  if (sfs !== undefined && String(sfs).toLowerCase() !== 'none') {
+    return { reason: 'navegador', detail: `Sec-Fetch-Site: ${sfs}` };
+  }
+  return null;
+}
 
 class XuatServer extends EventEmitter {
   /**
@@ -274,6 +371,20 @@ class XuatServer extends EventEmitter {
   }
 
   /**
+   * v1.0.13: registra un pedido rechazado, como mucho una vez cada 10s. Sin
+   * el tope, quien insistiera contra el puerto inundaría el archivo de log
+   * (que la gente adjunta a sus reportes). Con él, el primer rechazo queda
+   * visible y alcanza para diagnosticar "mi juego no traduce".
+   * @private
+   */
+  _logRechazo(rechazo) {
+    const ahora = Date.now();
+    if (this._ultimoLogRechazo && ahora - this._ultimoLogRechazo < 10000) return;
+    this._ultimoLogRechazo = ahora;
+    console.warn(`[XUAT] Pedido rechazado (${rechazo.reason}): ${rechazo.detail}. Este servidor sólo atiende al propio equipo, y no a navegadores.`);
+  }
+
+  /**
    * Handle incoming HTTP request
    * @private
    */
@@ -281,10 +392,22 @@ class XuatServer extends EventEmitter {
     const parsedUrl = url.parse(req.url, true);
     const pathname = parsedUrl.pathname;
 
-    // CORS headers for local development
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    // v1.0.13: ver evaluarPedido() arriba. Va ANTES de todo lo demás —incluso
+    // de /status— para que un pedido ajeno no obtenga ni siquiera una
+    // respuesta de cortesía.
+    const rechazo = evaluarPedido(req);
+    if (rechazo) {
+      this._logRechazo(rechazo);
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ code: 403, error: 'Forbidden' }));
+      return;
+    }
+
+    // v1.0.13: se QUITÓ el `Access-Control-Allow-Origin: *` que había acá
+    // ("for local development"). Nada propio lo necesita —el botón de prueba
+    // de la UI entra por el proceso principal con axios, no desde una
+    // página— y con el comodín cualquier sitio web podía además LEER las
+    // respuestas. Un juego Unity no hace CORS.
 
     if (req.method === 'OPTIONS') {
       res.writeHead(200);
@@ -386,3 +509,7 @@ class XuatServer extends EventEmitter {
 }
 
 module.exports = XuatServer;
+// v1.0.13: las reglas puras, para scripts/test-xuat-server-guard.js
+module.exports.evaluarPedido = evaluarPedido;
+module.exports.esParLocal = esParLocal;
+module.exports.esHostLocal = esHostLocal;
