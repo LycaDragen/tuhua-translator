@@ -28,6 +28,7 @@ const llmProviders = require('../services/translation/llm-providers');
 const promptPresets = require('../services/translation/prompt-presets');
 const { runAutoDetectAndPersist } = require('../services/textractor-path-detect');
 const UpdateChecker = require('../services/update-checker');
+const { decidirCapturaLinux, aplicarCapturaX11 } = require('./linux-capture');
 
 // v1.0.14: reutilizar conexiones HTTP(S) — Electron 28 (Node 18) abre una nueva por llamada.
 // Ver src/services/http-keepalive.js. Va antes de cualquier pedido de red.
@@ -100,6 +101,18 @@ for (const [method, level] of [['log', 'info'], ['warn', 'warn'], ['error', 'err
 }
 
 log.info('Tuhua Translator starting...');
+
+// v1.0.15: en Linux con Wayland, getSources() abre una sesión del portal de captura (y un
+// diálogo) en CADA llamada. Ver src/main/linux-capture.js. Tiene que ir antes de app 'ready'.
+{
+  const captura = decidirCapturaLinux();
+  if (captura.aplicar) {
+    aplicarCapturaX11(app);
+    log.info('[Captura] Sesión Wayland: captura por X11/XWayland para no pedir elegir pantalla en cada captura (TUHUA_CAPTURA_PORTAL=1 lo desactiva)');
+  } else if (captura.motivo === 'portal-por-pedido') {
+    log.info('[Captura] Sesión Wayland con TUHUA_CAPTURA_PORTAL=1: captura por el portal del sistema (puede pedir elegir pantalla en cada captura)');
+  }
+}
 
 // Prevent multiple instances
 const gotTheLock = app.requestSingleInstanceLock();
