@@ -2,11 +2,10 @@
 
 🌐 [English](en/translation-context-support.md) · **Español**
 
-Investigación de agosto 2026, cerrada para el overhaul de motores LLM
-(punto 2 del backlog: "investigar contexto nativo por motor"). Este
-documento reemplaza la investigación de scratch — tiene fecha de
-vencimiento (las APIs cambian), así que vive versionado en el repo en vez
-de en un plan efímero.
+Investigación de agosto de 2026 sobre qué motores de traducción aceptan
+contexto y glosario de forma nativa, hecha para la reescritura de los
+motores LLM. Tiene fecha de vencimiento (las APIs cambian), así que vive
+versionada en el repo.
 
 ## Qué significa "contexto nativo" y "glosario nativo" acá
 
@@ -55,13 +54,13 @@ Al borrar un perfil, su glosario remoto en DeepL se borra también
 
 ### DeepL: `custom_instructions`, `style_id`, `translation_memory_id` — verificado contra la API real, no contra la doc
 
-Agregado 2026-08-22, al revisar un mail promocional de DeepL contra lo que
+Agregado 2026-08-22, al contrastar la documentación de DeepL con lo que
 Tuhua ya tenía implementado (`deepl.js` desde v3.11.28-29, antes de que
 existiera este documento). **La documentación oficial de DeepL afirma que
 `custom_instructions` y `style_id` requieren API Pro** — ver
 [About style rules](https://support.deepl.com/hc/en-us/articles/20515591890204-About-style-rules).
 **Esto es incorrecto**, al menos para la cuenta usada en la verificación:
-probado con la key Free real de Lyca (`:fx`), pidiendo la misma frase con
+probado con una clave real de la API Free de DeepL (`:fx`), pidiendo la misma frase con
 instrucciones contradictorias sobre el mismo texto:
 
 | Request | Salida |
@@ -71,7 +70,7 @@ instrucciones contradictorias sobre el mismo texto:
 | `["Use extremely archaic, formal Spanish..."]` | `"Vuestra merced, Yuki-san, ruego se digne aguardarme en la estación."` |
 
 Las dos instrucciones cambiaron la salida de forma inconfundible — la
-feature funciona en Free. Sondeo completo de esa sesión:
+feature funciona en Free. Sondeo completo de esa prueba:
 
 | Parámetro / endpoint | API Free | Estado en Tuhua |
 |---|---|---|

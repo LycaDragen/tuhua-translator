@@ -2,10 +2,9 @@
 
 🌐 **English** · [Español](../translation-context-support.md)
 
-Research from August 2026, closed out for the LLM engine overhaul
-(backlog item 2: "investigate native context per engine"). This document
-replaces the scratch research — it has an expiry date (APIs change), so it
-lives versioned in the repo instead of in an ephemeral plan.
+Research from August 2026 into which translation engines accept context
+and glossaries natively, done for the rewrite of the LLM engines. It has
+an expiry date (APIs change), so it lives versioned in the repo.
 
 ## What "native context" and "native glossary" mean here
 
@@ -53,13 +52,13 @@ When a profile is deleted, its remote glossary in DeepL is deleted too
 
 ### DeepL: `custom_instructions`, `style_id`, `translation_memory_id` — verified against the real API, not the docs
 
-Added 2026-08-22, when reviewing a promotional email from DeepL against
-what Tuhua already had implemented (`deepl.js` since v3.11.28-29, before
-this document existed). **DeepL's official documentation claims that
+Added 2026-08-22, when checking DeepL's documentation against what Tuhua
+already had implemented (`deepl.js` since v3.11.28-29, before this
+document existed). **DeepL's official documentation claims that
 `custom_instructions` and `style_id` require the Pro API** — see
 [About style rules](https://support.deepl.com/hc/en-us/articles/20515591890204-About-style-rules).
 **This is incorrect**, at least for the account used in the verification:
-tested with Lyca's real Free key (`:fx`), requesting the same sentence
+tested with a real DeepL API Free key (`:fx`), requesting the same sentence
 with contradictory instructions on the same text:
 
 | Request | Output |
@@ -69,7 +68,7 @@ with contradictory instructions on the same text:
 | `["Use extremely archaic, formal Spanish..."]` | `"Vuestra merced, Yuki-san, ruego se digne aguardarme en la estación."` |
 
 Both instructions changed the output unmistakably — the feature works on
-Free. Full probe from that session:
+Free. Full probe from that test:
 
 | Parameter / endpoint | Free API | State in Tuhua |
 |---|---|---|
