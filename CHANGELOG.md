@@ -27,6 +27,9 @@
 
 ### Interno
 
+- **Documentos técnicos en inglés** (`docs/en/llm-prompting.md` y `docs/en/translation-context-support.md`), con
+  enlace cruzado a los originales en español. Al traducirlos se corrigió el original: decía que el motor Bing
+  estaba roto (se arregló en v3.13.102 y funciona) y remitía a una «memoria del proyecto» privada.
 - **README en inglés.** `README.md` pasa a ser la versión en inglés y el español se mueve a `README.es.md`
   (cada uno enlaza al otro arriba). Además: nota de que macOS está sin probar, y la licencia explicada como
   «código público» (CC BY-NC no es una licencia de código abierto en sentido estricto).

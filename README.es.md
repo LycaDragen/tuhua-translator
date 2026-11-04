@@ -135,6 +135,8 @@ Con DeepL puedes controlar el nivel de formalidad de la traducción, ideal para 
 
 ### Documentación técnica
 
+También disponible en inglés: [`docs/en/`](docs/en/).
+
 | Documento | Contenido |
 |---|---|
 | [`docs/translation-context-support.md`](docs/translation-context-support.md) | Qué motor soporta contexto y glosario nativo, y qué implementa Tuhua de cada uno |

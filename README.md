@@ -137,10 +137,10 @@ With DeepL you can control how formal the translation is, which is ideal for Jap
 
 | Document | Contents |
 |---|---|
-| [`docs/translation-context-support.md`](docs/translation-context-support.md) | Which engine supports context and native glossaries, and what Tuhua implements for each |
-| [`docs/llm-prompting.md`](docs/llm-prompting.md) | Prompt templates, available variables, the glossary as an instruction, the table of LLM providers and how to add a new one |
+| [`docs/en/translation-context-support.md`](docs/en/translation-context-support.md) | Which engine supports context and native glossaries, and what Tuhua implements for each |
+| [`docs/en/llm-prompting.md`](docs/en/llm-prompting.md) | Prompt templates, available variables, the glossary as an instruction, the table of LLM providers and how to add a new one |
 
-> These two documents are written in Spanish.
+Both are also available in Spanish: [`docs/`](docs/).
 
 ---
 
