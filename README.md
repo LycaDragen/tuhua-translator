@@ -1,6 +1,8 @@
 # 🌺 Tuhua Translator
 
-**Open Source Visual Novel Translator** — Traduce visual novels y juegos en tiempo real directamente en tu pantalla.
+🌐 **English** · [Español](README.es.md)
+
+**A visual novel and game translator** — translate visual novels and games in real time, right on your screen.
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Electron](https://img.shields.io/badge/Electron-28-blue.svg)](https://www.electronjs.org/)
@@ -8,194 +10,200 @@
 
 ---
 
-## 📖 ¿Qué es Tuhua Translator?
+## 📖 What is Tuhua Translator?
 
-Tuhua Translator es una aplicación de escritorio gratuita y de código abierto diseñada para traducir visual novels y juegos japoneses en tiempo real. Funciona superponiendo las traducciones directamente sobre la ventana del juego, sin necesidad de parches ni modificaciones de los archivos originales.
+Tuhua Translator is a free desktop app with public source code (licensed CC BY-NC 4.0, see [License](#-license)) that translates Japanese visual novels and games in real time. It overlays the translation directly on top of the game window — no patches, and no changes to the original game files.
 
-### ✨ Características principales
+### ✨ Main features
 
-- **4 métodos de entrada**: Textractor, Portapapeles, OCR y XUAT (XUnity.AutoTranslator)
-- **7 motores de traducción**: Google Translate (gratis), Bing (gratis), DeepL, OpenAI (7 proveedores cloud vía este mismo motor: OpenAI, OpenRouter, DeepSeek, Google Gemini, Anthropic, Groq, Custom), Local LLM, LibreTranslate y Custom MT
-- **Overlay transparente**: Traducciones superpuestas sobre la ventana del juego, con overlay de entrada para escribir texto manualmente
-- **Glosario personalizable**: Traducciones específicas para nombres y términos, con importación automática de personajes desde [VNDB](https://vndb.org/)
-- **Memoria de traducción**: Caché inteligente con fuzzy matching para diálogos repetitivos
-- **Perfiles por juego**: Glosario, ajustes de traducción y memoria independientes para cada juego
-- **8 idiomas de interfaz**: Español, English, 日本語, 中文, Русский, Português, Italiano, Français
-- **Tema oscuro/claro**: Interfaz adaptable a tu preferencia
-- **Buscador de actualizaciones**: Avisa cuando hay una versión nueva y la instala desde la app (Windows/Linux), sin descargar nada sin tu permiso
+- **4 input methods**: Textractor, Clipboard, OCR and XUAT (XUnity.AutoTranslator)
+- **7 translation engines**: Google Translate (free), Bing (free), DeepL, OpenAI (7 cloud providers through this one engine: OpenAI, OpenRouter, DeepSeek, Google Gemini, Anthropic, Groq, Custom), Local LLM, LibreTranslate and Custom MT
+- **Transparent overlay**: translations drawn over the game window, plus an input overlay for typing text by hand
+- **Custom glossary**: fixed translations for names and terms, with automatic character import from [VNDB](https://vndb.org/)
+- **Translation memory**: a smart cache with fuzzy matching for repetitive dialogue
+- **Per-game profiles**: each game gets its own glossary, translation settings and memory
+- **8 interface languages**: Español, English, 日本語, 中文, Русский, Português, Italiano, Français
+- **Full documentation** in the same 8 languages: [tuhua.lyca.dev](https://tuhua.lyca.dev/en/)
+- **Dark/light theme**
+- **Update checker**: tells you when a new version is out and installs it from inside the app (Windows/Linux), never downloading anything without your permission
 
 ---
 
-## 🚀 Instalación
+## 🚀 Installation
 
-### Descarga directa
+### Direct download
 
-Ve a la sección [Releases](https://github.com/LycaDragen/Tuhua_Translator/releases) y descarga el instalador para tu sistema operativo:
+Go to the [Releases](https://github.com/LycaDragen/Tuhua_Translator/releases) page and download the installer for your operating system:
 
-| Plataforma | Formato | Notas |
+| Platform | Format | Notes |
 |---|---|---|
-| Windows | `.exe` (NSIS) | Instalador con opción de directorio personalizado |
-| Linux | `.AppImage` | Portable, no requiere instalación |
-| macOS | `.dmg` | Sólo Apple Silicon (M1/M2/M3/M4) — arrastra a Aplicaciones |
+| Windows | `.exe` (NSIS) | Installer with a custom install directory option |
+| Linux | `.AppImage` | Portable, no installation needed |
+| macOS | `.dmg` | Apple Silicon only (M1/M2/M3/M4) — drag to Applications. **Untested**: the build is produced by CI but nobody has run it on a Mac yet |
 
-> **Los instaladores no están firmados** (todavía no hay certificado de desarrollador). Windows va a mostrar un aviso de SmartScreen ("Más información" → "Ejecutar de todas formas") y macOS va a bloquear la apertura con Gatekeeper la primera vez (clic derecho → "Abrir"). Es esperado — el código es público, podés revisarlo en este mismo repo.
+> **The installers are not signed** (there's no developer certificate yet). Windows will show a SmartScreen warning ("More info" → "Run anyway"), and on macOS Gatekeeper will block the first launch (right-click → "Open"). This is expected — the source code is public, and you can review it in this very repo.
 
-### Actualizaciones
+### Updates
 
-Tuhua avisa solo cuando hay una versión nueva: consulta GitHub 30 segundos después de abrir y muestra un aviso en la pestaña **Configuración** (el número de versión de la barra superior también se pone en ámbar con `↑`). **Nunca descarga ni instala nada sin que hagas clic** — podés descargar, ver los cambios, o ignorar esa versión concreta.
+Tuhua only tells you when there's a new version: it checks GitHub 30 seconds after launch and shows a notice in the **Settings** tab (the version number in the top bar also turns amber with a `↑`). **It never downloads or installs anything unless you click** — you can download it, read what changed, or skip that specific version.
 
-- En **Windows y Linux** la descarga y la instalación ocurren dentro de la app.
-- En **macOS** sólo avisa y abre la página de descarga: Apple exige un certificado de firma de pago para permitir auto-actualización.
+- On **Windows and Linux**, downloading and installing both happen inside the app.
+- On **macOS** it only notifies you and opens the download page: Apple requires a paid signing certificate to allow auto-updates.
 
-También podés buscar manualmente y apagar el chequeo automático desde **Configuración → Avanzado → Actualizaciones**.
+You can also check manually, or turn the automatic check off, under **Settings → Advanced → Updates**.
 
-> **Si venís de una versión `3.13.x`**: el buscador no te va a ofrecer la `1.0.1` ni las siguientes, porque `1.0.1` es un número menor que `3.13.120` (la numeración se reinició a semver real, ver [CHANGELOG.md](CHANGELOG.md)). Instalá la última versión a mano una sola vez y a partir de ahí las actualizaciones funcionan solas.
+> **If you're coming from a `3.13.x` version**: the updater won't offer you `1.0.1` or later, because `1.0.1` is a lower number than `3.13.120` (version numbering was reset to real semver, see [CHANGELOG.md](CHANGELOG.md)). Install the latest version by hand once, and from then on updates work by themselves.
 
-### Desde el código fuente
+### From source
 
-El proyecto usa [pnpm](https://pnpm.io/) (el lockfile del repo es `pnpm-lock.yaml`):
+The project uses [pnpm](https://pnpm.io/) (the repo's lockfile is `pnpm-lock.yaml`):
 
 ```bash
-# Clonar el repositorio
+# Clone the repository
 git clone https://github.com/LycaDragen/Tuhua_Translator.git
 cd Tuhua_Translator
 
-# Instalar dependencias
+# Install dependencies
 pnpm install
 
-# Ejecutar en modo desarrollo
+# Run in development mode
 pnpm run dev
 
-# Construir para tu plataforma
+# Build for your platform
 pnpm run build:win    # Windows
 pnpm run build:linux  # Linux
-pnpm run build:mac    # macOS (arm64, requiere macOS real o CI)
+pnpm run build:mac    # macOS (arm64, needs a real Mac or CI)
 ```
 
 ---
 
-## 🎮 Métodos de entrada
+## 🎮 Input methods
 
-### 🪝 Textractor (Recomendado)
-Conecta con [Textractor](https://github.com/Artikash/Textractor) para extraer texto directamente de la memoria del juego. Soporta tanto conexión TCP como lanzamiento de TextractorCLI integrado.
+Like every method, Tuhua always **opens paused**: press **▶ Active** to begin.
 
-- Extrae texto de la memoria del proceso del juego
-- Soporte para hooks personalizados
-- Auto-detección de hooks al lanzar juegos
-- Puerto fijo (9251) para el Modo Manual TCP — no hay campo en la interfaz para cambiarlo
+### 🪝 Textractor (Recommended)
+Connects to [Textractor](https://github.com/Artikash/Textractor) to pull text straight out of the game's memory. Supports both a TCP connection and launching the bundled TextractorCLI.
 
-### 📋 Portapapeles
-Monitorea el portapapeles del sistema y traduce automáticamente cualquier texto copiado. Ideal para juegos que permiten copiar texto.
+- Extracts text from the game process's memory
+- Support for custom hooks
+- Automatic hook detection when launching games
+- Fixed port (9251) for Manual TCP Mode — there is no field in the interface to change it
 
-- Sólo se traduce lo que se copia **después** de activar el método: lo que ya estaba en el portapapeles al activarlo (o al volver de una pausa) se ignora a propósito. Para traducir esa línea hay que copiar una nueva
+### 📋 Clipboard
+Watches the system clipboard and automatically translates any text you copy. Ideal for games that let you copy their text.
+
+- Only what you copy **after** turning the method on is translated: whatever was already on the clipboard when you activated it (or when you resume from a pause) is ignored on purpose. To translate that line, copy a new one
 
 ### 📸 OCR
-Captura una región de la pantalla y detecta el texto directamente de la imagen. Perfecto para juegos que no son compatibles con Textractor.
+Captures a region of the screen and reads the text from the image. Perfect for games Textractor can't handle.
 
-- **Motor por defecto: Tesseract.js** — corre sin descargas adicionales, sin depender de un binario nativo opcional (`onnxruntime-node`)
-- **PaddleOCR (PP-OCRv5) disponible como motor alternativo** — modelo unificado chino+japonés (kanji, kana, texto simplificado y tradicional) más un modelo dedicado para coreano, corriendo 100% local vía ONNX Runtime, sin necesidad de Python ni conexión a internet tras la primera descarga de modelos. Recomendado para japonés/chino/coreano, o cuando la escena tiene mucho ruido visual detrás del texto
-- **Detección automática de idioma** (`auto`): con Tesseract alterna entre inglés, japonés y coreano según el texto reconocido (nunca activa el modelo chino); con PaddleOCR usa un modelo unificado chino+japonés y sólo cambia a un modelo dedicado si detecta coreano
-- **Filtrado geométrico de furigana** (motor PaddleOCR): descarta automáticamente las lecturas kana pequeñas que aparecen sobre el kanji, para que no contaminen el texto a traducir
-- Soporte para texto vertical (縦書き) con detección y rotación automática (motor PaddleOCR)
-- Captura manual o automática (intervalo configurable)
+- **Default engine: Tesseract.js** — runs with no extra downloads and without depending on an optional native binary (`onnxruntime-node`)
+- **PaddleOCR (PP-OCRv5) available as an alternative engine** — a unified Chinese+Japanese model (kanji, kana, simplified and traditional text) plus a dedicated Korean model, running 100% locally through ONNX Runtime, with no Python and no internet connection after the first model download. Recommended for Japanese/Chinese/Korean, or when the scene has a lot of visual noise behind the text
+- **Automatic language detection** (`auto`): with Tesseract it alternates between English, Japanese and Korean depending on the recognized text (it never activates the Chinese model); with PaddleOCR it uses the unified Chinese+Japanese model and only switches to the dedicated model if it detects Korean
+- **Geometric furigana filtering** (PaddleOCR engine): automatically discards the small kana readings above kanji so they don't pollute the text being translated
+- Vertical text (縦書き) support with automatic detection and rotation (PaddleOCR engine)
+- Manual or automatic capture (configurable interval)
 
 ### 🎮 XUAT (XUnity.AutoTranslator)
-Integra con [XUnity.AutoTranslator](https://github.com/bbepis/XUnity.AutoTranslator) para juegos Unity. Tuhua actúa como servidor de traducción y XUAT reemplaza el texto directamente dentro del juego.
+Integrates with [XUnity.AutoTranslator](https://github.com/bbepis/XUnity.AutoTranslator) for Unity games. Tuhua acts as the translation server and XUAT replaces the text directly inside the game.
 
-- Instalación automática de BepInEx + XUAT
-- Detección automática del backend (Mono/IL2CPP)
-- El texto traducido aparece dentro del juego, sin overlay
-- Puerto configurable (por defecto: 8419)
+- Automatic BepInEx + XUAT installation
+- Automatic backend detection (Mono/IL2CPP)
+- The translated text appears inside the game, with no overlay
+- Configurable port (default: 8419)
+- Tuhua opens paused here too: the server starts when you press **▶ Active**
 
 ---
 
-## 🔤 Motores de traducción
+## 🔤 Translation engines
 
-| Motor | Tipo | Requiere API Key | Notas |
+| Engine | Type | Needs an API key | Notes |
 |---|---|---|---|
-| 🌐 Google Translate | Gratuito | No | Web scraping, sin límite oficial |
-| 🔍 Bing Translator | Gratuito | No | Web scraping, sin límite oficial |
-| 💎 DeepL API | Oficial | Sí | Alta calidad, soporta formalidad |
-| 🧠 OpenAI (LLM cloud) | Oficial | Sí | Un solo motor, 7 proveedores seleccionables: OpenAI, OpenRouter, DeepSeek, Google Gemini, Anthropic, Groq, Custom |
-| 🤖 Local LLM | Local | No | LM Studio, Ollama, llama.cpp o KoboldCpp, 100% offline |
-| 🏠 LibreTranslate | Self-hosted | No | Open source, privacidad total |
-| ⚙️ Custom MT | Personalizado | Opcional | Cualquier endpoint compatible |
+| 🌐 Google Translate | Free | No | Web scraping, no official limit |
+| 🔍 Bing Translator | Free | No | Web scraping, no official limit |
+| 💎 DeepL API | Official | Yes | High quality, supports formality |
+| 🧠 OpenAI (cloud LLM) | Official | Yes | One engine, 7 selectable providers: OpenAI, OpenRouter, DeepSeek, Google Gemini, Anthropic, Groq, Custom |
+| 🤖 Local LLM | Local | No | LM Studio, Ollama, llama.cpp or KoboldCpp, 100% offline |
+| 🏠 LibreTranslate | Self-hosted | No | Open source, full privacy |
+| ⚙️ Custom MT | Custom | Optional | Any compatible endpoint |
 
-### DeepL: Formalidad
-Con DeepL puedes controlar el nivel de formalidad de la traducción, ideal para japonés (keigo/casual). Es un ajuste por perfil:
-- Por defecto
-- Preferir formal
-- Preferir informal
+### DeepL: formality
+With DeepL you can control how formal the translation is, which is ideal for Japanese (keigo/casual). It's a per-profile setting:
+- Default
+- Prefer formal
+- Prefer informal
 
-### Documentación técnica
+### Technical documentation
 
-| Documento | Contenido |
+| Document | Contents |
 |---|---|
-| [`docs/translation-context-support.md`](docs/translation-context-support.md) | Qué motor soporta contexto y glosario nativo, y qué implementa Tuhua de cada uno |
-| [`docs/llm-prompting.md`](docs/llm-prompting.md) | Plantillas de prompt, variables disponibles, glosario como instrucción, tabla de proveedores LLM y cómo agregar uno nuevo |
+| [`docs/en/translation-context-support.md`](docs/en/translation-context-support.md) | Which engine supports context and native glossaries, and what Tuhua implements for each |
+| [`docs/en/llm-prompting.md`](docs/en/llm-prompting.md) | Prompt templates, available variables, the glossary as an instruction, the table of LLM providers and how to add a new one |
+
+Both are also available in Spanish: [`docs/`](docs/).
 
 ---
 
-## 📖 Glosario
+## 📖 Glossary
 
-El glosario te permite definir traducciones personalizadas para nombres de personajes, términos específicos del juego y jerga que los motores de traducción no manejan bien.
+The glossary lets you define custom translations for character names, game-specific terms and slang that translation engines don't handle well.
 
-- Soporte para expresiones regulares
-- Importación automática de nombres de personajes desde [VNDB](https://vndb.org/)
-- Aplicación automática antes de la traducción
-- Importar/Exportar en formato JSON
-
----
-
-## 💾 Memoria de traducción
-
-La memoria de traducción almacena pares de traducciones previas y los reutiliza automáticamente. Usa fuzzy matching para detectar diálogos similares, lo que es especialmente útil en visual novels con rutas ramificadas donde los mismos diálogos se repiten con ligeras variaciones.
-
-- Caché persistente por perfil
-- Fuzzy matching para diálogos similares
-- Ahorra llamadas a la API y reduce latencia
-- Historial de traducciones con exportación
+- Regular expression support
+- Automatic character-name import from [VNDB](https://vndb.org/)
+- Applied automatically before translation
+- JSON import/export
 
 ---
 
-## ⌨️ Atajos de teclado
+## 💾 Translation memory
 
-| Atajo | Acción |
+Translation memory stores pairs of previous translations and reuses them automatically. It uses fuzzy matching to spot similar lines, which is especially useful in visual novels with branching routes where the same dialogue repeats with small variations.
+
+- Persistent cache per profile
+- Fuzzy matching for similar lines
+- Saves API calls and cuts latency
+- Translation history with export
+
+---
+
+## ⌨️ Keyboard shortcuts
+
+| Shortcut | Action |
 |---|---|
-| `Ctrl+Shift+L` | Mostrar/Ocultar la ventana principal |
-| `Ctrl+Shift+E` | Mostrar/Ocultar overlay |
-| `Ctrl+Shift+M` | Activar/Desactivar click-through |
-| `Ctrl+Shift+R` | Volver a traducir el texto que ya está en pantalla, sin capturarlo de nuevo |
-| `Ctrl+Shift+O` | Ciclar la opacidad del overlay |
-| `Ctrl+Shift+S` | Captura de OCR inmediata (sólo con OCR activo) |
+| `Ctrl+Shift+L` | Show/Hide the main window |
+| `Ctrl+Shift+E` | Show/Hide the overlay |
+| `Ctrl+Shift+M` | Turn click-through on/off |
+| `Ctrl+Shift+R` | Re-translate the text already on screen, without capturing it again |
+| `Ctrl+Shift+O` | Cycle the overlay opacity |
+| `Ctrl+Shift+S` | Immediate OCR capture (only while OCR is active) |
 
 ---
 
-## 🛠️ Tecnologías
+## 🛠️ Technologies
 
-- **[Electron](https://www.electronjs.org/)** — Framework de aplicación de escritorio
-- **[Tesseract.js](https://github.com/naptha/tesseract.js)** — Motor OCR por defecto (WebAssembly)
-- **[PaddleOCR (PP-OCRv5)](https://github.com/PaddlePaddle/PaddleOCR)** vía **[ONNX Runtime](https://github.com/microsoft/onnxruntime)** — OCR alternativo, corre local sin Python
-- **[electron-store](https://github.com/sindresorhus/electron-store)** — Persistencia de configuración
-- **[Tailwind CSS](https://tailwindcss.com/)** — Framework CSS utilitario (v3.4.17, incluido en `renderer/main/vendor/`; la interfaz no necesita internet para verse)
+- **[Electron](https://www.electronjs.org/)** — desktop application framework
+- **[Tesseract.js](https://github.com/naptha/tesseract.js)** — default OCR engine (WebAssembly)
+- **[PaddleOCR (PP-OCRv5)](https://github.com/PaddlePaddle/PaddleOCR)** via **[ONNX Runtime](https://github.com/microsoft/onnxruntime)** — alternative OCR, runs locally without Python
+- **[electron-store](https://github.com/sindresorhus/electron-store)** — settings persistence
+- **[Tailwind CSS](https://tailwindcss.com/)** — utility CSS framework (v3.4.17, bundled in `renderer/main/vendor/`; the interface doesn't need internet to render)
 
 ---
 
-## 📁 Estructura del proyecto
+## 📁 Project structure
 
 ```
 tuhua-translator/
 ├── src/
-│   ├── main/                    # Proceso principal de Electron
-│   │   ├── index.js             # Punto de entrada
-│   │   ├── ipc-handlers.js      # Manejadores IPC
-│   │   ├── window-manager.js    # Gestión de ventanas
-│   │   ├── tray.js              # Bandeja del sistema
-│   │   └── shortcuts.js         # Atajos globales
-│   ├── preload/                 # Scripts de precarga (seguridad IPC)
+│   ├── main/                    # Electron main process
+│   │   ├── index.js             # Entry point
+│   │   ├── ipc-handlers.js      # IPC handlers
+│   │   ├── window-manager.js    # Window management
+│   │   ├── tray.js              # System tray
+│   │   └── shortcuts.js         # Global shortcuts
+│   ├── preload/                 # Preload scripts (IPC security)
 │   │   ├── main-preload.js
 │   │   └── overlay-preload.js
-│   └── services/                # Servicios del backend
+│   └── services/                # Backend services
 │       ├── clipboard-watcher.js
 │       ├── ocr.js
 │       ├── ocr-paddle.js
@@ -203,24 +211,24 @@ tuhua-translator/
 │       ├── textractor-launcher.js
 │       ├── xuat-server.js
 │       ├── xuat-installer.js
-│       ├── vndb.js              # Importación de personajes desde VNDB
+│       ├── vndb.js              # Character import from VNDB
 │       ├── game-engine-detect.js
-│       ├── profiles/            # Perfiles por juego
+│       ├── profiles/            # Per-game profiles
 │       │   ├── profile-schema.js
 │       │   ├── profile-store.js
 │       │   └── profile-migrations.js
 │       └── translation/
-│           ├── pipeline.js      # Orquestador central
-│           ├── cache.js         # Caché LRU persistente
+│           ├── pipeline.js      # Central orchestrator
+│           ├── cache.js         # Persistent LRU cache
 │           ├── translation-memory.js
 │           ├── context-memory.js
 │           ├── glossary-entries.js
 │           ├── glossary-merge.js
 │           ├── glossary-prompt.js
 │           ├── deepl-glossary-sync.js
-│           ├── llm-providers.js # Los 7 proveedores del motor OpenAI/LLM
+│           ├── llm-providers.js # The 7 providers of the OpenAI/LLM engine
 │           ├── prompt-presets.js
-│           └── engines/         # Motores de traducción
+│           └── engines/         # Translation engines
 │               ├── google-free.js
 │               ├── bing.js
 │               ├── deepl.js
@@ -229,15 +237,15 @@ tuhua-translator/
 │               ├── libretranslate.js
 │               └── custom-mt.js
 ├── renderer/
-│   ├── main/                    # Ventana principal
+│   ├── main/                    # Main window
 │   │   ├── index.html
 │   │   ├── renderer.js
 │   │   ├── i18n.js
 │   │   └── assets/
-│   ├── output-overlay/          # Overlay de traducción
-│   ├── input-overlay/           # Overlay para texto manual
-│   ├── word-save-prompt/        # Guardado rápido de términos al glosario
-│   └── capture-area/            # Área de captura OCR
+│   ├── output-overlay/          # Translation overlay
+│   ├── input-overlay/           # Overlay for manual text
+│   ├── word-save-prompt/        # Quick save of terms to the glossary
+│   └── capture-area/            # OCR capture area
 ├── package.json
 ├── LICENSE
 └── .gitignore
@@ -245,72 +253,72 @@ tuhua-translator/
 
 ---
 
-## 🤝 Contribuir
+## 🤝 Contributing
 
-¡Las contribuciones son bienvenidas! Si quieres contribuir:
+Contributions are welcome! If you'd like to contribute:
 
-1. Haz un Fork del repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Haz commit de tus cambios (`git commit -m 'Añadir nueva funcionalidad'`)
-4. Haz push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abre un Pull Request
+1. Fork the repository
+2. Create a branch for your feature (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Open a Pull Request
 
-### Reportar bugs
+### Reporting bugs
 
-Si encuentras un bug, abre un [Issue](https://github.com/LycaDragen/Tuhua_Translator/issues) o
-escribe a **help@tuhua.lyca.dev** — lo segundo si no tienes cuenta de GitHub o prefieres no
-abrir el reporte en público. En cualquiera de los dos casos, incluye:
+If you find a bug, open an [Issue](https://github.com/LycaDragen/Tuhua_Translator/issues) or
+write to **help@tuhua.lyca.dev** — the latter if you don't have a GitHub account or would rather
+not file the report in public. Either way, include:
 
-- Descripción del problema
-- Pasos para reproducirlo
-- Tu sistema operativo y versión de Tuhua Translator
-- Logs. La interfaz tiene dos botones abajo a la derecha: **Logs** copia las últimas 100
-  líneas al portapapeles, y **Carpeta** abre el explorador con `main.log` ya seleccionado
-  para adjuntarlo entero — este último es el que conviene para un reporte. Detalle completo
-  (rutas por sistema y rotación) en [tuhua.lyca.dev](https://tuhua.lyca.dev/referencia/reportar-bug/)
+- A description of the problem
+- Steps to reproduce it
+- Your operating system and Tuhua Translator version
+- Logs. The interface has two buttons at the bottom right: **Logs** copies the last 100
+  lines to the clipboard, and **Folder** opens the file explorer with `main.log` already
+  selected so you can attach it whole — the latter is the one to use for a report. Full details
+  (paths per system and rotation) at [tuhua.lyca.dev](https://tuhua.lyca.dev/en/referencia/reportar-bug/)
 
-> En modo Portapapeles el log incluye el texto que copiás. Desde la v1.0.7 las credenciales que
-> Tuhua reconoce (claves de API de OpenAI, Anthropic, DeepL, Google…) se tapan antes de escribirse
-> al archivo, pero conviene ojearlo igual antes de mandarlo: es texto plano.
-
----
-
-## 📜 Licencia
-
-Este proyecto está licenciado bajo **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
-
-Esto significa que puedes:
-- ✅ **Compartir** — copiar y redistribuir el material en cualquier medio o formato
-- ✅ **Adaptar** — remezclar, transformar y construir a partir del material
-
-Bajo las siguientes condiciones:
-- 📝 **Atribución** — debes dar crédito adecuado a Lyca, proporcionar un enlace a la licencia e indicar si se realizaron cambios
-- 🚫 **NoComercial** — no puedes usar el material con fines comerciales
-
-Para más detalles, consulta el archivo [LICENSE](LICENSE) o visita [creativecommons.org/licenses/by-nc/4.0](https://creativecommons.org/licenses/by-nc/4.0/).
+> In Clipboard mode the log includes the text you copied. Since v1.0.7, the credentials Tuhua
+> recognizes (OpenAI, Anthropic, DeepL, Google… API keys) are masked before being written to
+> the file, but it's still worth skimming before you send it: it's plain text.
 
 ---
 
-## 👤 Autor
+## 📜 License
 
-**Lyca** — [sebaguerra6@gmail.com](mailto:sebaguerra6@gmail.com)
+This project is licensed under **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
 
-Si te gusta este proyecto, considera dejar una ⭐ en GitHub.
+That means you can:
+- ✅ **Share** — copy and redistribute the material in any medium or format
+- ✅ **Adapt** — remix, transform, and build upon the material
+
+Under the following terms:
+- 📝 **Attribution** — you must give appropriate credit to Lyca, provide a link to the license, and indicate if changes were made
+- 🚫 **NonCommercial** — you may not use the material for commercial purposes
+
+The source code is public, but because of the NonCommercial term this is a *source-available* license rather than an OSI-approved open source one. For details, see the [LICENSE](LICENSE) file or visit [creativecommons.org/licenses/by-nc/4.0](https://creativecommons.org/licenses/by-nc/4.0/).
 
 ---
 
-## 🙏 Agradecimientos
+## 👤 Author
 
-### Especiales
+**Lyca** — [help@tuhua.lyca.dev](mailto:help@tuhua.lyca.dev)
 
-- **ZpectralKrystal** — por el apoyo incondicional, por estar siempre ahí y por motivarme a crecer y ser mejor en todo este proceso.
-- **Dust** — por regalarme la clave de Claude Pro que hizo posible llevar este proyecto hasta donde siempre quise que llegara.
+If you like this project, consider leaving a ⭐ on GitHub. Tuhua is free; if you'd like to support it, there's a discreet coffee icon in the app's top bar (or go straight to [ko-fi.com/lycadragen](https://ko-fi.com/lycadragen)) — it's entirely optional.
 
-### Tecnologías y proyectos open source
+---
 
-- [Textractor](https://github.com/Artikash/Textractor) — Extractor de texto para juegos
-- [XUnity.AutoTranslator](https://github.com/bbepis/XUnity.AutoTranslator) — Plugin de traducción para Unity
-- [Tesseract.js](https://github.com/naptha/tesseract.js) — Motor OCR por defecto (WebAssembly)
-- [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) (PaddlePaddle) — OCR alternativo (PP-OCRv5)
-- [DeepL](https://www.deepl.com/) — Motor de traducción de alta calidad
-- [Electron](https://www.electronjs.org/) — Framework de aplicaciones de escritorio
+## 🙏 Acknowledgements
+
+### Special thanks
+
+- **Zpec** — for the unconditional support, for always being there, and for pushing me to grow and be better throughout this whole process.
+- **Dust** — for gifting me the Claude Pro key that made it possible to take this project as far as I always wanted it to go.
+
+### Technologies and open source projects
+
+- [Textractor](https://github.com/Artikash/Textractor) — text extractor for games
+- [XUnity.AutoTranslator](https://github.com/bbepis/XUnity.AutoTranslator) — translation plugin for Unity
+- [Tesseract.js](https://github.com/naptha/tesseract.js) — default OCR engine (WebAssembly)
+- [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) (PaddlePaddle) — alternative OCR (PP-OCRv5)
+- [DeepL](https://www.deepl.com/) — high-quality translation engine
+- [Electron](https://www.electronjs.org/) — desktop application framework

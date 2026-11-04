@@ -1,7 +1,7 @@
 /**
  * capture-geometry.js bench — pins the crop-rectangle math behind a real
  * regression (v3.13.112, Ronda 4d → fixed in v3.13.114, hardened in
- * v3.13.116). Confirmed by Lyca on real Windows: PaddleOCR detecting a
+ * v3.13.116). confirmed on real Windows: PaddleOCR detecting a
  * degenerate 32x32 input ("0 regions"), and an uncaught Tesseract crash
  * ("Error attempting to read image" / leptonica's "truncated file") while
  * reading a screen capture.

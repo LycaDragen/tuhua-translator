@@ -40,7 +40,7 @@ function containsCJK(str) {
  *
  * v3.13.6x: this was originally gated on "is the term ALL-Latin"
  * (`/^[A-Za-z0-9'-]+$/`) instead of "does the term contain no CJK" — caught
- * testing non-CJK-non-Latin languages (Lyca asked specifically not to limit
+ * testing non-CJK-non-Latin languages (the requirement is not to limit
  * testing to well-known languages): a Cyrillic term "арт" fell through to
  * plain substring matching exactly like a CJK term would, and matched
  * inside "старт" (Russian for "start") — the EXACT same bug the guard

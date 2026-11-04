@@ -21,7 +21,7 @@
  * 600x150 minus a 28px title bar = 600x122).
  *
  * Font rasterization differs between this WSL machine and Windows (where
- * Lyca actually runs the app) — absolute similarity scores are therefore NOT
+ * the app is actually run) — absolute similarity scores are therefore NOT
  * comparable across machines. That's fine: the expected text is known by
  * construction, and every comparison that matters (before/after a pipeline
  * change, pad0 vs pad100) happens on one machine in one session. Do not try

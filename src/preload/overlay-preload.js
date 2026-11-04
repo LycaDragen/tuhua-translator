@@ -28,6 +28,8 @@ const api = {
   // Capture area actions (used by capture-area overlay)
   ocrCapture: () => ipcRenderer.invoke('ocr-capture'),
   ocrToggleScan: () => ipcRenderer.invoke('ocr-toggle-scan'),
+  // v1.0.17: textos de esta ventana en el idioma de la interfaz
+  getCaptureStrings: () => ipcRenderer.invoke('get-capture-strings'),
 
   // v3.9.7: Output overlay auto-resize
   // Requests the main process to resize this overlay window to fit content

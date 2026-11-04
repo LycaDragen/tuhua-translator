@@ -51,7 +51,7 @@ function normalizeExePath(exePath) {
  * only real source of the `process` argument this feeds into) is itself
  * gated to `process.platform === 'win32'` (ipc-handlers.js), and the
  * lowercasing here assumes a case-insensitive filesystem. On a
- * case-sensitive one (WSL/Linux — Lyca's own dev environment when running
+ * case-sensitive one (WSL/Linux — the author's own dev environment when running
  * Tuhua under WSLg) this fallback tier may simply never fire for two
  * differently-cased names that Windows would treat as identical — that's
  * fine, because the PRIMARY match key (normalizeExePath, exact path) is
@@ -121,7 +121,7 @@ function buildGameRecord(proc, inspection = {}) {
  *   exeName alone,
  *     >= 2 profile candidates, none disambiguated by dirName -> ambiguous
  *
- * A NAME-ONLY match NEVER produces `resolved`, by design (Lyca's explicit
+ * A NAME-ONLY match NEVER produces `resolved`, by design (an explicit
  * decision) — re-pointing a profile at a different exe silently, just
  * because the filename matches, is exactly the kind of "helpful" auto-link
  * that turns into a permanently-wrong PID/glossary/context association the

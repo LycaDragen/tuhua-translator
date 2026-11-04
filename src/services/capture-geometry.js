@@ -16,7 +16,7 @@
  * REAL size can push x/y past the thumbnail's own bounds, which forces a
  * negative width/height into NativeImage.crop() — confirmed as the root
  * cause of a Tesseract crash ("Error attempting to read image") and
- * PaddleOCR detecting a degenerate 32x32 input on Lyca's real Windows
+ * PaddleOCR detecting a degenerate 32x32 input on a real Windows
  * machine (v3.13.114).
  */
 

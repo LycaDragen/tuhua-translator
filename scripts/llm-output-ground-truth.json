@@ -139,7 +139,7 @@
       "expectedActions": [
         "detected-refusal"
       ],
-      "note": "The real bug found by Lyca (Nekopara Vol.1 session): a terse Spanish refusal answering long garbled Textractor hook noise — neither corroboration signal could fire (output is SHORTER than source, and Spanish shares the Latin script with the target), so this needed the unconditional full-clause pattern, not just broader language coverage."
+      "note": "The real bug found in real testing (Nekopara Vol.1 session): a terse Spanish refusal answering long garbled Textractor hook noise — neither corroboration signal could fire (output is SHORTER than source, and Spanish shares the Latin script with the target), so this needed the unconditional full-clause pattern, not just broader language coverage."
     },
     {
       "id": "refusal-french-opener-caught",
@@ -164,7 +164,7 @@
       "expectedActions": [
         "detected-refusal"
       ],
-      "note": "The real bug found by Lyca (Nekopara Vol.1 session, ronda 4): a Clipboard hook briefly grabbed an unrelated pasted paragraph as 'game text'; GPT refused in Spanish and it sailed to the overlay uncaught. Neither prior signal could fire — the refusal is SHORTER than the (unusually long) source, so 2a's disproportion check fails; Spanish shares the Latin script with the target, so 2b never applies. This needs the topic-vocabulary signal (2c), independent of either side's length."
+      "note": "The real bug found in real testing (Nekopara Vol.1 session, ronda 4): a Clipboard hook briefly grabbed an unrelated pasted paragraph as 'game text'; GPT refused in Spanish and it sailed to the overlay uncaught. Neither prior signal could fire — the refusal is SHORTER than the (unusually long) source, so 2a's disproportion check fails; Spanish shares the Latin script with the target, so 2b never applies. This needs the topic-vocabulary signal (2c), independent of either side's length."
     },
     {
       "id": "passthrough-japanese-source-echoed-instead-of-translated-to-spanish",

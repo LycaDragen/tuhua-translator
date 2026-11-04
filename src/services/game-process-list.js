@@ -13,7 +13,7 @@
 // VN it's about to launch — a user who leaves the itch client open (the
 // common case; most VN installs go through it) can end up linking a
 // profile straight to itch.exe instead of the actual game. Confirmed real
-// (2026-08-24, Lyca): a profile's `game.exePath` resolved to
+// (2026-08-24): a profile's `game.exePath` resolved to
 // `...\itch\app-26.18.0\itch.exe`, which then fed a wrong PID into
 // Textractor's auto-connect AND kept re-triggering a "profile already
 // linked" suggestion on every later scan, for ANY game, as long as the

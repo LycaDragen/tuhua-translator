@@ -86,13 +86,13 @@ check('missing-mainwindowtitle-defaults-to-empty-string-not-undefined', () => {
 });
 
 check('itch-io-launcher-is-excluded-from-the-process-list', () => {
-  // v3.13.88: real bug (Lyca, 2026-08-24) — the itch.io desktop client
+  // v3.13.88: real bug (2026-08-24) — the itch.io desktop client
   // qualifies for the picker's own filter (real window + real path) just
   // like the VN it launches, so it showed up as a pickable "game" and got
   // linked by mistake, poisoning both the profile suggestion and
   // Textractor's PID auto-connect.
   const raw = JSON.stringify([
-    { Id: 31000, ProcessName: 'itch', MainWindowTitle: 'itch', Path: 'C:\\Users\\sebag\\AppData\\Local\\itch\\app-26.18.0\\itch.exe' },
+    { Id: 31000, ProcessName: 'itch', MainWindowTitle: 'itch', Path: 'C:\\Users\\Player\\AppData\\Local\\itch\\app-26.18.0\\itch.exe' },
     { Id: 35040, ProcessName: 'TemptationsBallad', MainWindowTitle: "Temptation's Ballad", Path: 'D:\\Itch.io\\temptations-ballad\\TemptationsBallad-0.2.8-pc\\TemptationsBallad.exe' }
   ]);
   const r = parseProcessListJson(raw);
@@ -101,8 +101,8 @@ check('itch-io-launcher-is-excluded-from-the-process-list', () => {
 
 check('isKnownLauncherProcess-matches-itch-install-path-shape', () => {
   const cases = [
-    ['C:\\Users\\sebag\\AppData\\Local\\itch\\app-26.18.0\\itch.exe', true],
-    ['C:\\Users\\sebag\\AppData\\Local\\itch\\app-1.0.0\\itch.exe', true],
+    ['C:\\Users\\Player\\AppData\\Local\\itch\\app-26.18.0\\itch.exe', true],
+    ['C:\\Users\\Player\\AppData\\Local\\itch\\app-1.0.0\\itch.exe', true],
     ['D:\\Games\\SomeVN\\itch.exe', false],   // bare exeName alone must NOT be enough
     ['D:\\Itch.io\\temptations-ballad\\TemptationsBallad-0.2.8-pc\\TemptationsBallad.exe', false],
     [undefined, false],

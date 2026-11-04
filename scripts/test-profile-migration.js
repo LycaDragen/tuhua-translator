@@ -152,7 +152,7 @@ check('textractor-port-treats-stock-default-as-empty', () => {
 });
 
 check('textractor-port-global-non-default-wins', () => {
-  // Mirrors Lyca's real install: global is already a real custom port
+  // Mirrors a real install: global is already a real custom port
   // (non-default) — it must win, matching the documented real bug fix.
   const profiles = [v0Profile({ name: 'Nekopara', textractorPort: 9251 })];
   const result = migrateProfiles({ profiles, settings: { textractorPort: 6677 }, globalGlossaryEntries: [], activeProfile: 'Nekopara' });
@@ -321,7 +321,7 @@ check('seed-deepl-custom-instructions-no-op-when-global-empty', () => {
 }, 'A user who never wrote global instructions has nothing to preserve — the profile stays [], and the DeepL engine\'s own DEFAULT_INSTRUCTIONS fallback applies exactly as it did before this field existed.');
 
 // ─── v2 -> v3: seedDeeplFormality (pure function) ──────────────────────
-// v3.13.80, same day: deeplFormality became profile-scoped too, on Lyca's
+// v3.13.80, same day: deeplFormality became profile-scoped too, on an
 // explicit request after the instructions scoping above. Same shape of
 // step, same reason to exist — see seedDeeplCustomInstructions above.
 check('seed-deepl-formality-fills-empty-profiles-from-global', () => {
@@ -447,7 +447,7 @@ check('strip-ghost-settings-v2-is-a-no-op-when-nothing-to-strip', () => {
 }, 'Idempotent: a store already past this step (or that never had these keys) reports changed:false.');
 
 check('profile-store-migrate-from-v3-strips-ghost-settings-and-keeps-existing-backup-gone', () => {
-  // Simulates Lyca's real install: already fully migrated to v3 (the
+  // Simulates a real install: already fully migrated to v3 (the
   // v0->v1 step's own backup/promotion logic never runs again — see the
   // class doc comment on why re-running it against grown data would be a
   // regression), but still carrying the six now-dead keys from earlier

@@ -10,8 +10,8 @@
  * injectable via the `deps` param — so it's testable in plain Node
  * (scripts/test-game-engine-detect.js) without a fake filesystem on disk.
  *
- * Origin: Lyca hit Amorous (a Visual Novel built on FNA, an open-source XNA
- * reimplementation) with Textractor and burned ~10 minutes trying x86/x64/
+ * Origin: a real case with Amorous (a Visual Novel built on FNA, an open-source XNA
+ * reimplementation) and Textractor: ~10 minutes were spent trying x86/x64/
  * manual TextractorGUI before finding out Textractor structurally cannot
  * see FNA/XNA/MonoGame text — it's drawn via SpriteBatch.DrawString onto a
  * GPU font atlas, never through the Win32 GDI text APIs
@@ -171,7 +171,7 @@ function detectGameEngine(exePath, deps = {}) {
         family: 'renpy',
         confidence: 'high',
         markers: ['renpy/', has('game') ? 'game/' : 'lib/'],
-        // v3.13.86: NOT 'ocr' — real bug found by Lyca testing a real
+        // v3.13.86: NOT 'ocr' — real bug found testing a real
         // Ren'Py game. Ren'Py ships a built-in "copy dialogue to the OS
         // clipboard" shortcut (Shift+C) — that's a far more reliable text
         // source than screen OCR (no scan-region setup, no OCR misreads,

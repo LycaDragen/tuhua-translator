@@ -1,5 +1,7 @@
 # Prompting en los motores LLM
 
+🌐 [English](en/llm-prompting.md) · **Español**
+
 Cómo Tuhua arma el prompt que le manda a un motor LLM (OpenAI, OpenRouter,
 DeepSeek, Google Gemini, Anthropic, Groq, o un servidor local
 OpenAI-compatible como LM Studio/Ollama/llama.cpp/KoboldCpp), qué variables

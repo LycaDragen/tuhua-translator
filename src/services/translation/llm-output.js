@@ -93,7 +93,7 @@ function stripWrappingQuotesIfSafe(text, sourceText, actions) {
 // Japanese ones; deliberately not exhaustive (an over-broad phrase table is
 // itself a false-positive risk).
 //
-// v3.13.6x (Fase 9 testing follow-up): found by real testing (Lyca,
+// v3.13.6x (Fase 9 testing follow-up): found by real testing (
 // Nekopara Vol.1) — a GPT refusal in SPANISH ("Lo siento, no puedo ayudar
 // con eso.") sailed through completely undetected. The model tends to
 // refuse IN the target language it was asked to translate into, not
@@ -157,7 +157,7 @@ const REFUSAL_PATTERNS_UNCONDITIONAL = [
 ];
 
 // Signal 2c (v3.13.6x, Fase 9 testing, ronda 4): refusal-specific TOPIC
-// phrases near the start of the output. Found by real testing (Lyca,
+// phrases near the start of the output. Found by real testing (
 // Nekopara Vol.1): a Clipboard hook briefly picked up an unrelated,
 // LONG paragraph of pasted text as "game text" — GPT refused in Spanish
 // ("Lo siento, no puedo proporcionar contenido adicional o modificar...")

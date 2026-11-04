@@ -1,11 +1,90 @@
 # Changelog
 
+## [1.0.17] — las notificaciones abiertas ya siguen el cambio de idioma
+
+### Arreglado
+
+- **Con una notificación en pantalla, al cambiar el idioma de la interfaz la notificación se quedaba en el
+  idioma anterior** (por ejemplo, de español a inglés). Las notificaciones no se cierran solas (desde
+  v3.13.41), y su texto se armaba una sola vez al aparecer. Ahora cada una guarda *cómo* se arma y
+  `changeLanguage()` la vuelve a armar en el idioma nuevo, conservando el contador «(×N)» de los repetidos.
+  Lo mismo para el aviso ámbar «x64 sin resultado, probando x86…» de la barra de Textractor. Los mensajes
+  crudos de un motor («HTTP 401: …») no se tocan: no hay nada nuestro que traducir ahí.
+- **11 notificaciones del panel de XUAT estaban escritas en español dentro del código** (iniciar/detener el
+  servidor, probarlo, copiar la URL, instalar, «no parece ser un juego Unity», limpiar la caché…): salían en
+  español aunque la interfaz estuviera en inglés. Ahora son claves de traducción en los 8 idiomas.
+- **Textos que seguían en español con la interfaz en otro idioma** (descubierto al sacar capturas en inglés):
+  los placeholders de «Nombre del perfil…», la búsqueda del historial, los dos campos del glosario, la clave de
+  API, el modelo local y la fuente personalizada (eran `placeholder="…"` escritos a mano); el estado del
+  servidor XUAT («Activo (puerto …)», «Detener», «Iniciar», «Desactivado») y los mensajes del instalador de
+  XUAT; y **la ventana del área de captura del OCR entera** («Escaneo pausado», «Escaneando»…), que es otra
+  página con otro preload y nunca había tenido traducción. Ahora la ventana recibe sus textos del proceso
+  principal (mismo `i18n.js`) y los actualiza si cambias de idioma con ella abierta.
+- El ejemplo del campo «Traducción» del glosario decía «Hola» sea cual fuese el idioma; ahora es un ejemplo del
+  idioma de la interfaz.
+- `deepl_reset_instructions + ' ✓' || 'Reset ✓'` nunca podía llegar al `||` (concatenar con `undefined` da un
+  texto, no un valor falso); ahora usa el mismo mecanismo que el resto.
+
+- **Tuhua ya no se presenta como «código abierto».** La licencia es CC BY-NC 4.0 y su cláusula «no comercial»
+  la deja fuera de la definición de código abierto de la OSI; lo exacto es «código público» (*source-available*).
+  Corregido el subtítulo de la barra superior (8 idiomas), la descripción de `package.json` y el comentario de
+  cabecera de `src/main/index.js`. La licencia no cambia.
+
+### Interno
+
+- **Documentos técnicos en inglés** (`docs/en/llm-prompting.md` y `docs/en/translation-context-support.md`), con
+  enlace cruzado a los originales en español. Al traducirlos se corrigió el original: decía que el motor Bing
+  estaba roto (se arregló en v3.13.102 y funciona) y remitía a una «memoria del proyecto» privada.
+- **Comentarios, tests y CHANGELOG sin nombres:** ~150 comentarios del código narraban quién pidió o encontró
+  cada cosa; ahora describen sólo el hecho (qué pasaba y qué se hizo). El contacto público de `README`,
+  `LICENSE` y `package.json` es `help@tuhua.lyca.dev`, y los fixtures de prueba ya no llevan una ruta de
+  Windows con un usuario real.
+- Bancos nuevos `scripts/test-public-hygiene.js` (4 casos: falla si vuelven nombres de personas, el correo
+  personal o una ruta con usuario real) y `scripts/test-license-wording.js` (4 casos): falla si «open source» vuelve al subtítulo, a
+  `package.json` o al arranque del README.
+- **README en inglés.** `README.md` pasa a ser la versión en inglés y el español se mueve a `README.es.md`
+  (cada uno enlaza al otro arriba). Además: nota de que macOS está sin probar, y la licencia explicada como
+  «código público» (CC BY-NC no es una licencia de código abierto en sentido estricto).
+- `showToast()` acepta un texto o una función; helper `tt(clave, respaldo, vars)` que lee el idioma al momento
+  de llamar. `scripts/test-toast-notices.js` pasa de 10 a 18 casos (cada defecto verificado reintroduciéndolo),
+  incluida una guardia que falla si alguien vuelve a pasar un texto ya traducido a `showToast()`.
+- Bancos nuevos `scripts/test-i18n-placeholders.js` (2 casos: falla si aparece otro placeholder escrito a mano)
+  y `scripts/test-capture-area-i18n.js` (5 casos), con mutaciones verificadas.
+- Verificado con la app real recorriendo los 8 idiomas con notificaciones abiertas.
+
+## [1.0.16] — Tuhua abre siempre en pausa (también en XUAT), y un icono de Ko-fi
+
+### Arreglado
+
+- **En modo XUAT, Tuhua se abría «Activo» con el servidor ya levantado.** La app está pensada para abrir
+  siempre en pausa, pero el arranque pausado dejaba a XUAT como excepción (el razonamiento era que
+  `translationActive` no afecta a XUAT, y eso era sólo a medias cierto: el ▶/⏸ del panel en modo XUAT sí
+  enciende y apaga el servidor). Ahora XUAT arranca como los demás: pausado, servidor sin levantar, puerto
+  8419 cerrado hasta tocar ▶ Activo. Verificado con la app real: arranque con `translationActive: true`
+  guardado → PAUSADO y puerto cerrado; ▶ → ACTIVO y puerto abierto; ⏸ → vuelve a cerrarse. Textractor,
+  Portapapeles y OCR siguen igual.
+- **Contrapartida, a propósito:** un juego con XUnity ya abierto no recibe traducción hasta que se toque
+  ▶ Activo en Tuhua.
+
+### Añadido
+
+- **Icono de Ko-fi** (una taza, gris) en la barra superior, entre el tema y la guía: abre
+  `https://ko-fi.com/lycadragen`. Sólo se tiñe de rojo al pasar el mouse. El destino es fijo en el
+  proceso principal (el renderer no puede pedir abrir otra URL). Tooltip en los 8 idiomas.
+- Por debajo de 860 px de ancho se oculta el subtítulo «Traductor VN de Código Abierto» de la barra:
+  con el icono nuevo ya no cabía a 800 px (el mínimo de la ventana) y se partía en dos líneas.
+
+### Interno
+
+- Banco nuevo `scripts/test-startup-paused-kofi.js` (8 casos; cada defecto verificado reintroduciéndolo —
+  y uno de ellos mostró que el primer check no detectaba la excepción de XUAT, así que se corrigió).
+
 ## [1.0.15] — en Linux con Wayland, el OCR ya no pide elegir pantalla en cada captura
 
 ### Arreglado
 
 - **En Linux con una sesión Wayland (KDE Plasma, GNOME…), el OCR abría el diálogo «compartir pantalla» en
-  cada captura.** Lo reportó un usuario en CachyOS. La causa, verificada ejecutando Electron 28: bajo
+  cada captura.** La causa, verificada ejecutando Electron 28: bajo
   Wayland, Chromium captura la pantalla por el portal del sistema (xdg-desktop-portal, PipeWire) y cada
   llamada a `desktopCapturer.getSources()` abre una sesión nueva del portal; con tres llamadas seguidas
   hubo tres contactos al portal. El OCR automático captura cada 3,5 s, de ahí un diálogo por captura (y
@@ -188,7 +267,7 @@ Continuación de la v1.0.9, que arregló la compuerta equivocada. Esto es lo que
 
 ### Arreglado
 
-- **Con OCR, el texto que se revela de a poco no se traducía una vez completo.** Reportado como
+- **Con OCR, el texto que se revela de a poco no se traducía una vez completo.** Síntoma:
   "a veces no detecta el cambio de texto", con Tesseract y con PaddleOCR. No es que no lo leyera:
   lo leía y lo descartaba por parecido al anterior. El filtro que evita retraducir la misma línea
   medía, entre otras cosas, cuánto del texto más corto coincide con el principio del más largo —
@@ -217,9 +296,8 @@ Continuación de la v1.0.9, que arregló la compuerta equivocada. Esto es lo que
 
 ## [1.0.7] — el log ya no puede filtrar tu API key
 
-Un usuario mandó su log para diagnosticar otra cosa y adentro venía su clave de API, copiada al
-portapapeles un rato antes. No hizo nada mal: el flujo que Tuhua recomienda para reportar un
-problema era, tal como estaba, un flujo que filtraba credenciales.
+Un log de diagnóstico contenía una clave de API, copiada al portapapeles un rato antes. El flujo que
+Tuhua recomienda para reportar un problema era, tal como estaba, un flujo que filtraba credenciales.
 
 ### Arreglado
 
@@ -261,8 +339,8 @@ problema era, tal como estaba, un flujo que filtraba credenciales.
 
 ## [1.0.6] — cinco cosas que un archivo de log dejó a la vista
 
-Ronda nacida de leer una sesión real de traducción de punta a punta. Ninguno de estos cinco
-problemas había sido reportado por separado: todos estaban en el mismo log.
+Ronda nacida de leer una sesión real de traducción de punta a punta: los cinco problemas estaban en
+el mismo log.
 
 ### Arreglado
 

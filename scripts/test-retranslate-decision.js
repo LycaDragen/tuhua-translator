@@ -3,7 +3,7 @@
  * Electron. Ver src/services/retranslate-decision.js para la historia de por
  * qué esta condición vive en su propio archivo.
  *
- * El defecto que motiva la ronda (Lyca, Windows, probando v1.0.7):
+ * El defecto que motiva la ronda (Windows, probando v1.0.7):
  *
  *   14:51:12  [Clipboard] Status: stopped      ← pausa: se oculta el overlay
  *   14:53:47  Settings changed while text is on-screen — auto-retranslating…

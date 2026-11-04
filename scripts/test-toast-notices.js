@@ -36,20 +36,33 @@ const { extractFunction, makeDocument } = require('./lib/renderer-harness.js');
 
 function makeHarness() {
   const document = makeDocument();
-  const showToast = new Function('document', 'setTimeout',
-    `${extractFunction(rendererSrc, 'showToast')}; return showToast;`)(document, setTimeout);
+  // v1.0.17: `translations`/`currentLang` son estado mutable del renderer; el
+  // arnés los expone (state.lang) para poder cambiar de idioma con un toast
+  // abierto, que es justo lo que se verifica abajo.
+  const state = { lang: 'es', packs: { es: {}, en: {} } };
+  const factory = new Function('document', 'setTimeout', 'state',
+    `const translations = state.packs; let currentLang = state.lang;
+     const __sync = () => { currentLang = state.lang; };
+     ${extractFunction(rendererSrc, 'showToast')}
+     ${extractFunction(rendererSrc, 'retranslateToasts')}
+     ${extractFunction(rendererSrc, 'tt')}
+     return { showToast, retranslateToasts, tt, setLang: (l) => { state.lang = l; __sync(); } };`);
+  const api = factory(document, setTimeout, state);
+  const { showToast, retranslateToasts, tt, setLang } = api;
 
   const container = () => document.getElementById('tuhua-toast-container');
   const texts = () => (container() ? container().children.map((t) => t.querySelector('.tuhua-toast-text').textContent) : []);
-  return { document, showToast, container, texts };
+  return { document, showToast, retranslateToasts, tt, setLang, state, container, texts };
 }
 
 /** updateLiveTranslation() with its collaborators stubbed out. */
 function makeFallbackNotice(langPack) {
   const shown = [];
+  // v1.0.17: updateLiveTranslation() ahora le pasa a showToast una FUNCIÓN
+  // (para poder retraducirla); el stub la resuelve, como hace el real.
   const fn = new Function('translations', 'currentLang', 'showToast', 'updateTargetLangDisplay', 'loadHistory',
-    `${extractFunction(rendererSrc, 'updateLiveTranslation')}; return updateLiveTranslation;`
-  )({ en: langPack }, 'en', (m) => shown.push(m), () => {}, () => {});
+    `${extractFunction(rendererSrc, 'tt')}; ${extractFunction(rendererSrc, 'updateLiveTranslation')}; return updateLiveTranslation;`
+  )({ en: langPack }, 'en', (m) => shown.push(typeof m === 'function' ? m() : m), () => {}, () => {});
   return { fn, shown };
 }
 
@@ -134,5 +147,77 @@ check('a-normal-translation-shows-no-toast', () => {
   n.fn({ engine: 'openai', translated: 'hola' });
   return { pass: n.shown.length === 0, actual: n.shown };
 });
+
+// ─── Cambio de idioma con un toast abierto (v1.0.17) ─────────────────────
+// Reportado: con una notificación en pantalla en español, al pasar
+// la interfaz a inglés la notificación seguía en español. Un toast no se
+// auto-cierra, así que se quedaba así hasta cerrarlo a mano.
+function langHarness() {
+  const h = makeHarness();
+  h.state.packs.es = { saved: 'Guardado {n} cosas', plain: 'Hola' };
+  h.state.packs.en = { saved: 'Saved {n} things', plain: 'Hello' };
+  return h;
+}
+
+check('the-reported-bug-an-open-toast-follows-a-language-switch', () => {
+  const h = langHarness();
+  h.showToast(() => h.tt('saved', 'x', { n: 3 }));
+  const antes = h.texts()[0];
+  h.setLang('en');
+  h.retranslateToasts();
+  return { pass: antes === 'Guardado 3 cosas' && h.texts()[0] === 'Saved 3 things', actual: { antes, despues: h.texts() } };
+}, 'Sin retranslateToasts() el texto quedaba congelado en el idioma de cuando salió.');
+
+check('a-retranslated-toast-keeps-its-repeat-counter', () => {
+  const h = langHarness();
+  h.showToast(() => h.tt('plain'));
+  h.showToast(() => h.tt('plain'));
+  h.setLang('en');
+  h.retranslateToasts();
+  return { pass: h.texts()[0] === 'Hello (×2)', actual: h.texts() };
+}, 'Al repintar no se puede perder el «(×N)»: es la señal de que el problema sigue ocurriendo.');
+
+check('after-the-switch-a-repeat-in-the-new-language-still-collapses', () => {
+  const h = langHarness();
+  h.showToast(() => h.tt('plain'));
+  h.setLang('en');
+  h.retranslateToasts();
+  h.showToast(() => h.tt('plain'));
+  return { pass: h.container().children.length === 1 && h.texts()[0] === 'Hello (×2)', actual: h.texts() };
+}, 'dataset.toastMessage se actualiza con el repintado; si no, el repetido ya no se reconocería y se apilaría.');
+
+check('a-raw-text-toast-is-left-untouched-by-the-switch', () => {
+  const h = langHarness();
+  h.showToast('HTTP 401: Invalid API Key');
+  h.setLang('en');
+  h.retranslateToasts();
+  return { pass: h.texts()[0] === 'HTTP 401: Invalid API Key', actual: h.texts() };
+}, 'El mensaje crudo de un motor no es nuestro para traducir; no debe romperse ni vaciarse.');
+
+check('retranslating-with-no-toast-open-does-nothing', () => {
+  const h = langHarness();
+  h.retranslateToasts();
+  return { pass: h.container() === null, actual: h.container() };
+});
+
+check('tt-falls-back-and-replaces-every-placeholder', () => {
+  const h = langHarness();
+  const a = h.tt('no_existe', 'Texto {x} y {x}', { x: 'A' });
+  const b = h.tt('saved', 'zzz', { n: 0 });
+  return { pass: a === 'Texto A y A' && b === 'Guardado 0 cosas', actual: { a, b } };
+}, 'Con 0 no debe quedar vacío (un `||` sobre el valor lo habría borrado), y los repetidos se reemplazan todos.');
+
+check('no-call-site-in-renderer-js-passes-a-prebuilt-translated-string', () => {
+  // Toda llamada a showToast con un texto traducido debe pasar una función.
+  // Se aceptan sólo mensajes crudos (error/e.message/notice) y el propio notice().
+  const crudos = /showToast\((?:\s*(?:\(\) =>|notice\)|source\)|createResult\.error\)|result\.error\)|e\.message \|\| String\(e\)\)|result\.error \|\| |result && result\.error \? result\.error : 'Error'\)|message\)))/;
+  const malas = rendererSrc.split('\n').filter((l) => !/^\s*\/\//.test(l) && /showToast\(/.test(l) && !/function showToast/.test(l) && !crudos.test(l));
+  return { pass: malas.length === 0, actual: malas.map((l) => l.trim().slice(0, 120)) };
+}, 'Guardia contra el patrón que causó el bug: showToast(t.algo || ...) arma el texto una sola vez.');
+
+check('changeLanguage-actually-calls-retranslateToasts', () => {
+  const body = extractFunction(rendererSrc, 'changeLanguage');
+  return { pass: /^\s*retranslateToasts\(\);/m.test(body), actual: body.length };
+}, 'Las funciones podían estar bien y nadie llamarlas: era exactamente el estado anterior.');
 
 run('renderer.js toast notices bench', CHECKS);

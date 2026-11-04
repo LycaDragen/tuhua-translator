@@ -91,7 +91,7 @@ function parseArgs(argv) {
 
 /**
  * Add `padPx` of background-colored margin on every side of an image, then
- * re-encode as PNG. Used to reproduce Lyca's real-world complaint ("capture
+ * re-encode as PNG. Used to reproduce a real-world complaint ("capture
  * window bigger than the text hurts recognition") on images we already have
  * ground truth for, without needing new source material for every pad level.
  *

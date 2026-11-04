@@ -348,7 +348,7 @@ function runUnitChecks(quiet) {
     for (let i = 0; i < 5; i++) cm.push('X', `t${i}`);
     const entries = cm.get();
     return { pass: entries.length === 1 && entries[0].translation === 't4', actual: entries };
-  }, "This is literally what happened in Lyca's real sessions: retranslating the same on-screen line via ↻ repeatedly used to leave 5 duplicate pairs, evicting every OTHER line of real scene context.");
+  }, "This is literally what happened in real sessions: retranslating the same on-screen line via ↻ repeatedly used to leave 5 duplicate pairs, evicting every OTHER line of real scene context.");
 
   unitCheck('getExcluding-omits-only-exact-source-matches', () => {
     const cm = new ContextMemory(5);

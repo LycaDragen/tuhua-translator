@@ -54,7 +54,7 @@
            .drag-area (z-index 11 vs 10) but is a SIBLING of it, not a
            descendant, so it never inherited .drag-area's drag region.
            The "OUTPUT" label (and any empty space around it) was
-           silently undraggable — exactly the dead-zone Lyca reported.
+           silently undraggable — exactly the dead-zone that was reported.
            #glossary-btn's own no-drag below still overrides this for
            just the button, so it stays clickable. */
         #top-right-controls {
@@ -265,7 +265,7 @@
 
             // v3.13.6x (Fase 9 testing follow-up): re-translate whatever
             // line is on screen right now, with whatever settings are
-            // current right now — real request from testing (Lyca):
+            // current right now — real request from testing:
             // comparing prompt presets on the same line needed a reliable
             // way to force a fresh translation without pausing/navigating
             // away, which could show a DIFFERENT line entirely. Works for

@@ -6,7 +6,7 @@
  * 'name-only-match-never-produces-resolved': this is what closes the class
  * of bug where a coincidental exeName match (two different games both
  * shipping `Game.exe`) would silently re-point a profile's PID resolution
- * at the wrong process. Lyca's explicit decision: a name-only match always
+ * at the wrong process. an explicit decision: a name-only match always
  * requires a click, never resolves on its own.
  *
  *   node scripts/test-game-identity.js
@@ -154,7 +154,7 @@ check('name-only-match-never-produces-resolved', () => {
     && result.needsPathConfirm.foundExePath === 'C:\\NewLocation\\nekopara.exe'
     && result.needsPathConfirm.processName === 'nekopara';
   return { pass, actual: result };
-}, "Lyca's explicit decision, blindable regression: a filename-only coincidence must NEVER silently re-point a profile at a different exe — always needsPathConfirm, always a click. processName is carried so the renderer can build a full process object for set-profile-game without a second round-trip.");
+}, "an explicit decision, blindable regression: a filename-only coincidence must NEVER silently re-point a profile at a different exe — always needsPathConfirm, always a click. processName is carried so the renderer can build a full process object for set-profile-game without a second round-trip.");
 
 check('name-match-with-dirname-tiebreak-disambiguates-two-candidates', () => {
   const gameA = { exePath: 'C:\\Games\\ProjA\\Game.exe', exeName: 'game.exe', dirName: 'proja' };

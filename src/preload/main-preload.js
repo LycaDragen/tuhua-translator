@@ -47,6 +47,7 @@ const ALLOWED_INVOKE_CHANNELS = new Set([
   'get-textractor-auto-detect-result',
   'open-docs-link',
   'open-mail-link',
+  'open-kofi-link',
   'textractor-launch',
   'textractor-kill',
   'textractor-cli-status',
@@ -295,6 +296,8 @@ const api = {
   openDocsLink: () => secureInvoke('open-docs-link'),
   // v1.0.7: destino fijo (mailto:help@tuhua.lyca.dev), igual que openDocsLink
   openMailLink: () => secureInvoke('open-mail-link'),
+  // v1.0.16: destino fijo (https://ko-fi.com/lycadragen), igual que openDocsLink
+  openKofiLink: () => secureInvoke('open-kofi-link'),
   // v3.13.8x: gameExePath (4th arg) is an optional hint — the "🎮 Elegir…"
   // picker already resolves it for free (list-game-processes returns
   // exePath per process), so the renderer forwards it here instead of the

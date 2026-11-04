@@ -43,7 +43,7 @@ const EXPECTED_FIELDS = [
   // v3.13.80: DeepL custom_instructions, scoped per-game for the same
   // reason as deeplGlossaryId two lines up.
   'deeplCustomInstructions',
-  // v3.13.80: added on Lyca's explicit request after the instructions
+  // v3.13.80: added on an explicit request after the instructions
   // scoping above — a VN's register is exactly as game-specific.
   'deeplFormality',
   'glossary', 'hook', 'cover', 'game', 'history'
@@ -276,12 +276,12 @@ check('deeplCustomInstructions-defaults-to-empty-array', () => {
 check('deeplFormality-is-profile-scoped', () => {
   const pass = PROFILE_SCOPED_SETTING_KEYS.includes('deeplFormality');
   return { pass };
-}, "v3.13.80, Lyca's explicit request: a VN's register (formal vs. informal) is exactly as game-specific as its glossary or instructions. Verified against DeepL's real API that formality is genuinely honored on this Free-plan account.");
+}, "v3.13.80, an explicit request: a VN's register (formal vs. informal) is exactly as game-specific as its glossary or instructions. Verified against DeepL's real API that formality is genuinely honored on this Free-plan account.");
 
 check('deeplFormality-defaults-to-empty-string', () => {
   const p = createProfile({ name: 'Test' });
   return { pass: p.deeplFormality === '', actual: p.deeplFormality };
-}, "'' means \"no per-game override yet\". deepl.js's setFormality() treats '' as DeepL's own neutral 'default' (changed from 'prefer_more' same day, on Lyca's explicit request — VN dialogue is often casual between characters, so defaulting new profiles to formal/usted was actively wrong, not just arbitrary).");
+}, "'' means \"no per-game override yet\". deepl.js's setFormality() treats '' as DeepL's own neutral 'default' (changed from 'prefer_more' same day, on an explicit request — VN dialogue is often casual between characters, so defaulting new profiles to formal/usted was actively wrong, not just arbitrary).");
 
 check('deeplGlossarySync-defaults-to-null', () => {
   const p = createProfile({ name: 'Test' });

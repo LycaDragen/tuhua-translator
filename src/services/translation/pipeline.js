@@ -450,7 +450,7 @@ class TranslationPipeline extends EventEmitter {
           // sanitizer — defaults on.
           sanitize: s.llmSanitize !== false
         });
-        // v3.13.6x (Fase 9 testing follow-up, ronda 5): Lyca reported twice
+        // v3.13.6x (Fase 9 testing follow-up, ronda 5): Reported twice
         // (real OpenAI, both rounds) seeing no perceptible difference
         // switching prompt presets or hand-editing the template, despite
         // this being verified correct end-to-end against a real pipeline

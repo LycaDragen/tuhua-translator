@@ -23,7 +23,7 @@ const { check, CHECKS } = makeCheckRegistry();
 
 const rendererSrc = fs.readFileSync(path.join(__dirname, '..', 'renderer', 'main', 'renderer.js'), 'utf8');
 
-/** Las 3 de Anthropic en llm-providers.js, que es lo que Lyca veía. */
+/** Las 3 de Anthropic en llm-providers.js, que es lo que se veía en la interfaz. */
 const CURADAS = ['claude-haiku-4-5', 'claude-sonnet-5', 'claude-opus-5'];
 
 /** Lo que devuelve /v1/models de Anthropic: las curadas + bastante más. */

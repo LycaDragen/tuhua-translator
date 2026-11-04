@@ -94,17 +94,17 @@
             // v3.13.23: x64<->x86 auto-fallback — same "toast + status text"
             // pattern already used for onOcrEngineFallback below.
             api.onTextractorCliArchFallback(({ from, to, reason }) => {
-                const t = translations[currentLang] || translations['en'];
-                const template = t.textractor_arch_fallback_toast || '{from} sin resultado, probando {to}...';
-                const notice = template.replace('{from}', from).replace('{to}', to);
+                const notice = () => tt('textractor_arch_fallback_toast', '{from} sin resultado, probando {to}...', { from, to });
                 showToast(notice);
                 // v3.13.32: also remembered here (not just painted once) so
                 // the 'relaunching' case in updateCliStatus can re-show it
                 // across the killed/exited -> relaunching -> launched
                 // sequence the handover actually produces.
+                // v1.0.17: se guarda la FUNCIÓN (no el texto ya armado) para
+                // poder repintarlo si cambia el idioma.
                 cliArchFallbackNotice = notice;
                 const text = document.getElementById('cli-status-text');
-                if (text) text.innerHTML = '<span class="text-amber-500 pulse-dot">⟳ ' + notice + '</span>';
+                if (text) text.innerHTML = '<span class="text-amber-500 pulse-dot">⟳ ' + notice() + '</span>';
             });
             // v3.13.8x (settings UX audit, Fase 5): live push for the
             // "switched to Textractor mid-session, no saved path" case —
@@ -139,8 +139,7 @@
             api.onTextractorCliArchResolved(({ cliPath }) => {
                 const input = document.getElementById('textractor-cli-path');
                 if (input) input.value = cliPath;
-                const t = translations[currentLang] || translations['en'];
-                showToast((t.cli_arch_resolved_toast || 'This architecture works — Tuhua will use it from now on.'));
+                showToast(() => tt('cli_arch_resolved_toast', 'This architecture works — Tuhua will use it from now on.'));
             });
             api.onHooksDiscovered((data) => updateHookSelector(data));
             // v3.13.85 (Fase C2): the game-engine advisory's own push,
@@ -164,7 +163,7 @@
                 // Show fallback message
                 if (descEl) descEl.textContent = t.ocr_paddle_fallback || `PaddleOCR falló, usando Tesseract: ${reason}`;
                 // Show toast notification
-                showToast(t.ocr_paddle_fallback_toast || `PaddleOCR no disponible, usando Tesseract como respaldo`);
+                showToast(() => tt('ocr_paddle_fallback_toast', 'PaddleOCR no disponible, usando Tesseract como respaldo'));
             });
 
             // v3.13.79 (Fase 3, round-3 plan): the opposite direction of
@@ -326,7 +325,7 @@
             engineApiKeys.llm = { ...(settings.llmProviderKeys || {}) };
             // v3.13.80 fix: restore deeplCustomInstructions UNCONDITIONALLY —
             // not gated behind `savedEngine === 'deepl'` like the rest of this
-            // block. Real bug found live by Lyca: `engine` is ALSO
+            // block. Real bug found live: `engine` is ALSO
             // profile-scoped, so a freshly created blank profile (default
             // engine: 'google-free') flips the dropdown away from DeepL on
             // load — but this restore used to live INSIDE the DeepL-only
@@ -344,7 +343,7 @@
                     : '';
             updateDeepLInstructionsCount();
             updateDeepLInstructionsUI();
-            // v3.13.80: formality is profile-scoped now too (Lyca's explicit
+            // v3.13.80: formality is profile-scoped now too (an explicit
             // request) — same fix as deeplCustomInstructions just above, and
             // for the identical reason: this used to live inside the
             // DeepL-only branch below, so switching to a profile whose own
@@ -352,7 +351,7 @@
             // dropdown showing the PREVIOUS profile's formality. Must always
             // run. '' (a blank/unseeded profile) falls back to 'default' for
             // display, matching deepl.js's setFormality() fallback — changed
-            // from 'prefer_more' on Lyca's explicit request, since defaulting
+            // from 'prefer_more' on an explicit request, since defaulting
             // every new profile to formal/usted was actively wrong for
             // casual VN dialogue, not just an arbitrary choice. That
             // fallback is NOT written back to the profile just for being
@@ -604,7 +603,7 @@
         // in the modal (say, the OCR interval slider) also lit up the
         // SIDEBAR's button, and clicking that sidebar button would show
         // "✓ ¡Guardado!" without having saved the modal field at all
-        // (gatherConfig() doesn't read it). Real bug Lyca hit from the
+        // (gatherConfig() doesn't read it). Real bug hit from the
         // other direction: close the gear modal without clicking Aplicar,
         // reopen it, the button was still green because nothing had ever
         // cleared modalDirty for a change that was never actually
@@ -673,7 +672,7 @@
 
         // v3.13.8x (settings UX audit): the checkmark icon on save-btn/
         // settings-apply-btn used to be permanent button chrome, always
-        // visible even at rest — Lyca's feedback was that it should read
+        // visible even at rest — user feedback was that it should read
         // as "this just saved," not decoration. Shown only for this flash
         // window (2.5s), then hidden again — matches the ✓ text swap that
         // was already there, just extends it to the icon too. Guarded
@@ -746,8 +745,8 @@
             // Windows mostramos directamente la sigla del idioma en mayúsculas.
             // v3.13.110: 🌐 (auto) y 📜 (lzh) SÍ renderizan bien en Windows
             // (no son banderas compuestas), pero dejarlos como emoji mientras
-            // el resto pasa a sigla generaba una mezcla inconsistente — Lyca
-            // pidió todo-bandera o todo-sigla, nunca mitad y mitad. Ahora
+            // el resto pasa a sigla generaba una mezcla inconsistente —
+            // el criterio es todo-bandera o todo-sigla, nunca mitad y mitad. Ahora
             // isWindows convierte los 21 códigos por igual, sin excepción.
             const isWindows = api && api.platform === 'win32';
             document.querySelectorAll('[data-i18n-lang]').forEach(opt => {
@@ -778,7 +777,7 @@
             // change, never on a language switch. The <option> text above just
             // got retranslated, but this cached copy didn't, so it stayed
             // stuck in whatever language was active at the last engine change
-            // (real bug reported by Lyca: sidebar dropdown showed the new
+            // (real bug reported in real testing: sidebar dropdown showed the new
             // language correctly, this label kept showing Spanish).
             const engineSelectEl = document.getElementById('engine-select');
             const displayEngineEl = document.getElementById('display-engine');
@@ -836,6 +835,20 @@
             renderGameStatus();
             renderGameBanners();
 
+            // v1.0.17: los toasts abiertos (no se auto-cierran) y el aviso
+            // ámbar de «probando x86» de la barra del CLI son texto armado,
+            // no [data-i18n]: sin esto se quedaban en el idioma anterior.
+            retranslateToasts();
+            // v1.0.17: el estado del servidor XUAT («Activo (puerto …)»,
+            // «Detener») es texto armado, no [data-i18n].
+            if (typeof updateXuatStatus === 'function') updateXuatStatus();
+            if (typeof cliArchFallbackNotice === 'function') {
+                const cliText = document.getElementById('cli-status-text');
+                if (cliText && cliText.querySelector('.text-amber-500.pulse-dot')) {
+                    cliText.innerHTML = '<span class="text-amber-500 pulse-dot">⟳ ' + cliArchFallbackNotice() + '</span>';
+                }
+            }
+
             api.saveSettings({ uiLanguage: lang });
         }
 
@@ -861,7 +874,7 @@
         }
 
         // ===== SIDEBAR RESIZE =====
-        // v3.13.94 (Lyca's ask): the sidebar already grows automatically
+        // v3.13.94 (requested): the sidebar already grows automatically
         // with the window (v3.13.93), but he wanted to be able to drag it
         // wider still — past whatever the window itself provides — and
         // shrink the play-button column down to it, since that column
@@ -962,7 +975,7 @@
                 if (!dragging) return;
                 dragging = false;
                 if (!dragStarted) {
-                    // v3.13.97: real confusion this caused — Lyca had
+                    // v3.13.97: real confusion this caused — someone had
                     // dragged the handle while testing the broken
                     // v3.13.94/95 drag, and that width stayed persisted;
                     // the NEXT launch (already on the fixed v3.13.96)
@@ -1023,7 +1036,7 @@
 
         // ===== SETTINGS MODAL =====
         // v3.13.100 (settings tabs): replaces the old collapsible-category
-        // accordion (_settingsCatState/toggleSettingsCategory) — Lyca's
+        // accordion (_settingsCatState/toggleSettingsCategory) — a deliberate
         // call, no real benefit to two categories open at once when
         // neither fits on screen without scrolling anyway. Remembers the
         // last tab viewed for the rest of the session (not persisted to
@@ -1060,7 +1073,7 @@
                     // Load regex filters for the Text Filter category
                     loadRegexFilters();
                 } else if (modalDirty) {
-                    // v3.13.8x (settings UX audit): Lyca's real report —
+                    // v3.13.8x (settings UX audit): a real report —
                     // change something in the modal (e.g. the OCR interval
                     // slider), close via the × or the backdrop without
                     // clicking "Aplicar", reopen: the button was still
@@ -1262,7 +1275,7 @@
             // Re-initialize UI with defaults
             await init();
 
-            showToast(t.settings_reset || 'Configuración restablecida');
+            showToast(() => tt('settings_reset', 'Configuración restablecida'));
         }
 
         // ===== INPUT METHOD =====
@@ -1624,7 +1637,7 @@
             updatePromptPresetDesc('balanced');
             api.saveSettings({ promptTemplate: '' });
             const t = translations[currentLang] || translations['en'];
-            showToast(t.prompt_reset || 'Prompt restablecido al valor por defecto');
+            showToast(() => tt('prompt_reset', 'Prompt restablecido al valor por defecto'));
         }
 
         // ===== ENGINE FIELDS =====
@@ -1843,13 +1856,12 @@
             }
             // v3.13.6x (Fase 9 testing follow-up, ronda 4): pipeline.js has
             // sent isFallback:true since the fallback chain existed — this
-            // was the first UI code to ever read that field. Lyca noticed
+            // was the first UI code to ever read that field. It was noticed that
             // an invalid API key produced no visible signal at all (not
             // even the persistent-toast pattern already used for the
             // Textractor arch-fallback and PaddleOCR->Tesseract fallbacks).
             if (data.isFallback) {
-                const t = translations[currentLang] || translations['en'];
-                const template = t.translation_fallback_toast || 'Primary translation engine failed, using fallback ({engine})';
+
                 // v1.0.6: the toast said WHAT happened but never WHY, so an
                 // invalid API key was indistinguishable from a rate limit or
                 // a network drop — the actual sentence ("HTTP 401: Invalid
@@ -1857,7 +1869,7 @@
                 // appended raw, not translated: it's the engine's own
                 // server-side message, so there's nothing of ours to i18n.
                 const reason = data.fallbackReason ? ` — ${data.fallbackReason}` : '';
-                showToast(template.replace('{engine}', data.engine || '') + reason);
+                showToast(() => tt('translation_fallback_toast', 'Primary translation engine failed, using fallback ({engine})', { engine: data.engine || '' }) + reason);
             }
             loadHistory();
         }
@@ -1867,9 +1879,7 @@
             // 'error' event (ALL engines including every fallback failed)
             // had zero listeners on the renderer side — silently dropped,
             // same gap as the isFallback case above.
-            const t = translations[currentLang] || translations['en'];
-            const template = t.translation_failed_toast || 'Translation failed: {error}';
-            showToast(template.replace('{error}', data.error || ''));
+            showToast(() => tt('translation_failed_toast', 'Translation failed: {error}', { error: data.error || '' }));
         }
 
         // ===== DEBUG LOGS (v3.10.0) =====
@@ -1879,7 +1889,7 @@
             const t = translations[currentLang] || translations['en'];
             const res = await api.openLogsFolder();
             if (!res || !res.success) {
-                showToast(t.logs_open_folder_error || 'No se pudo abrir la carpeta de logs');
+                showToast(() => tt('logs_open_folder_error', 'No se pudo abrir la carpeta de logs'));
             }
         }
 
@@ -1889,16 +1899,16 @@
                 const t = translations[currentLang] || translations['en'];
                 if (result.success && result.logContent) {
                     await navigator.clipboard.writeText(result.logContent);
-                    showToast(t.logs_copied || 'Logs copiados al portapapeles');
+                    showToast(() => tt('logs_copied', 'Logs copiados al portapapeles'));
                 } else {
-                    showToast(t.logs_copy_failed || 'No se pudieron obtener los logs');
+                    showToast(() => tt('logs_copy_failed', 'No se pudieron obtener los logs'));
                 }
             } catch (err) {
                 // v1.0.5: estos tres avisos estaban hardcodeados en español y
                 // no seguían el idioma de la interfaz — mismo defecto que
                 // tenía la lista de atajos.
                 const t = translations[currentLang] || translations['en'];
-                showToast((t.logs_copy_error || 'Error: {error}').replace('{error}', err.message));
+                showToast(() => tt('logs_copy_error', 'Error: {error}', { error: err.message }));
             }
         }
 
@@ -1907,7 +1917,7 @@
         // messages (import results, error details) didn't stay up long
         // enough to read.
         // v3.13.6x (Fase 9 testing follow-up, ronda 5): was a single-slot
-        // toast (a new call replaced whatever was showing) — Lyca noticed
+        // toast (a new call replaced whatever was showing) — it was noticed
         // that a fallback/error notification could fire while an earlier
         // toast was still up unclosed, and the new one silently replaced
         // it instead of both being visible. Now a stack: each call adds a
@@ -1925,7 +1935,17 @@
         // flood 35e1616 removed from the opacity notice, arriving by a
         // different door. The counter is deliberate: silently dropping the
         // repeat would hide that the problem is still happening.
-        function showToast(message) {
+        function showToast(source) {
+            // v1.0.17: `source` puede ser un texto o una FUNCIÓN que lo arma.
+            // El toast no se auto-cierra, así que si el usuario cambia de
+            // idioma con uno abierto, un texto ya armado se quedaba en el
+            // idioma viejo para siempre. Con una función, el toast guarda
+            // cómo construir su texto y retranslateToasts() lo vuelve a armar
+            // en el idioma nuevo. Los mensajes crudos (el error de un motor,
+            // `e.message`) siguen pasándose como texto: no hay nada nuestro
+            // que traducir ahí.
+            const build = typeof source === 'function' ? source : null;
+            const message = build ? build() : source;
             let container = document.getElementById('tuhua-toast-container');
             if (!container) {
                 container = document.createElement('div');
@@ -1948,6 +1968,7 @@
             toast.className = 'tuhua-toast';
             toast.dataset.toastMessage = message;
             toast.dataset.toastCount = '1';
+            if (build) toast._tuhuaBuild = build;
             toast.style.cssText = 'display:flex;align-items:flex-start;gap:10px;width:100%;box-sizing:border-box;padding:10px 10px 10px 16px;border-radius:10px;font-size:13px;font-weight:500;background:#1e293b;color:#10b981;border:1px solid rgba(16,185,129,0.3);transition:opacity 0.15s ease;';
 
             const text = document.createElement('span');
@@ -1974,6 +1995,37 @@
             // Newest toast takes the bottom slot (the container's
             // main-start in column-reverse) — prepend, not append.
             container.prepend(toast);
+        }
+
+        // v1.0.17: vuelve a armar, en el idioma actual, el texto de cada toast
+        // abierto que sepa construirlo (ver showToast). Conserva el contador
+        // «(×N)» de los repetidos.
+        function retranslateToasts() {
+            const container = document.getElementById('tuhua-toast-container');
+            if (!container) return;
+            Array.from(container.children).forEach((el) => {
+                if (typeof el._tuhuaBuild !== 'function') return;
+                const message = el._tuhuaBuild();
+                el.dataset.toastMessage = message;
+                const count = parseInt(el.dataset.toastCount, 10) || 1;
+                const label = el.querySelector('.tuhua-toast-text');
+                if (label) label.textContent = count > 1 ? `${message} (×${count})` : message;
+            });
+        }
+
+        // v1.0.17: texto traducido en el idioma ACTUAL, leído al momento de
+        // llamar (no capturado antes). Es lo que permite pasarle a showToast
+        // una función que se pueda volver a evaluar tras cambiar de idioma.
+        // `vars` reemplaza todos los {nombre} del texto.
+        function tt(key, fallback, vars) {
+            const t = translations[currentLang] || translations['en'];
+            let text = t[key] || fallback || key;
+            if (vars) {
+                Object.keys(vars).forEach((k) => {
+                    text = text.split('{' + k + '}').join(vars[k] == null ? '' : String(vars[k]));
+                });
+            }
+            return text;
         }
 
         // ===== CLICK THROUGH =====
@@ -2008,7 +2060,7 @@
                 // v1.0.2: mismo bug que el de 'retranslate' de acá arriba, y
                 // por la misma razón — el atajo se registraba en shortcuts.js
                 // y emitía el evento, pero esta rama no existía, así que
-                // Ctrl+Shift+O nunca hizo nada. Reportado por Lyca probando
+                // Ctrl+Shift+O nunca hizo nada. Reportado probando
                 // los atajos documentados.
                 cycleOverlayOpacity();
             }
@@ -2036,7 +2088,7 @@
             // cuando apretó el atajo. Un toast acá además se apila —
             // showToast() no se auto-cierra (ver su doc comment), así que
             // ciclar cuatro veces dejaba cuatro carteles que hay que cerrar
-            // a mano. Reportado por Lyca: "hace flood".
+            // a mano. Reportado: "hace flood".
         }
 
         // ===== FONT FAMILY =====
@@ -2082,7 +2134,7 @@
         }
 
         // v3.13.8x: live preview while dragging font-size-range/
-        // opacity-range — Lyca asked for the overlay to visibly update
+        // opacity-range — the overlay must visibly update
         // WHILE dragging, not only on release. Debounced (~80ms) rather
         // than called on every 'input' tick: each call is a real
         // electron-store write (synchronous disk I/O), and a slider fires
@@ -2117,7 +2169,7 @@
                 api.xuatUpdateLanguage(sourceLang, targetLang).then(result => {
                     if (result.success) {
                         const t = translations[currentLang] || translations['en'];
-                        showToast(t.xuat_lang_updated || `Idiomas XUAT actualizados: ${sourceLang} → ${targetLang}`);
+                        showToast(() => tt('xuat_lang_updated', 'Idiomas XUAT actualizados'));
                     }
                 }).catch(err => {
                     console.log('[XUAT] Language saved but config not updated:', err.message);
@@ -2385,8 +2437,7 @@
             api.saveSettings({ deeplCustomInstructions: [] });
             updateDeepLInstructionsCount();
             updateDeepLInstructionsUI();
-            const t = translations[currentLang] || translations['en'];
-            showToast(t.deepl_reset_instructions + ' ✓' || 'Reset ✓');
+            showToast(() => tt('deepl_reset_instructions', 'Reset') + ' ✓');
         }
 
         // v3.11.29: Update the instruction counter display
@@ -2667,7 +2718,7 @@
             const result = await api.importGlossary(browse.path, currentGlossaryScope);
             if (result.success) {
                 loadGlossary();
-                showToast((t.glossary_import_success || 'Imported {count} entries').replace('{count}', result.imported));
+                showToast(() => tt('glossary_import_success', 'Imported {count} entries', { count: result.imported }));
                 return;
             }
             // v3.13.41: importEntries() now flags WHY nothing was imported
@@ -2677,11 +2728,11 @@
             // translated, not source/target), reading as "nothing
             // happened." Give the specific reason when we have one.
             if (result.code === 'WRONG_CATEGORY_HISTORY') {
-                showToast(t.glossary_import_wrong_category || 'That file is a history export, not a glossary — different category, can\'t be imported here.');
+                showToast(() => tt('glossary_import_wrong_category', 'That file is a history export, not a glossary — different category, can\'t be imported here.'));
             } else if (result.code === 'NO_VALID_ENTRIES') {
-                showToast(t.glossary_import_no_valid_entries || 'No valid glossary entries found in that file.');
+                showToast(() => tt('glossary_import_no_valid_entries', 'No valid glossary entries found in that file.'));
             } else {
-                showToast((t.glossary_import_failed || 'Import failed: ') + result.error);
+                showToast(() => tt('glossary_import_failed', 'Import failed: ') + result.error);
             }
         }
 
@@ -2691,7 +2742,7 @@
             const browse = await api.browseSaveFile({ title: t.glossary_export, defaultFileName });
             if (browse.canceled || !browse.path) return;
             const result = await api.exportGlossary(browse.path, currentGlossaryScope);
-            if (result.success) showToast((t.glossary_export_success || 'Exportadas {count} entradas').replace('{count}', result.exported));
+            if (result.success) showToast(() => tt('glossary_export_success', 'Exportadas {count} entradas', { count: result.exported }));
         }
 
         // v3.13.105: the four in-page modals below (openVndbImportModal,
@@ -2726,7 +2777,7 @@
             const t = translations[currentLang] || translations['en'];
             const targetProfile = profileList.find(p => p.id === profileId);
             if (!targetProfile) {
-                showToast(t.vndb_no_active_profile || 'Profile not found.');
+                showToast(() => tt('vndb_no_active_profile', 'Profile not found.'));
                 return;
             }
             const profileName = displayProfileName(targetProfile, t);
@@ -2964,13 +3015,11 @@
                             coverUrl: vn.imageUrl || '', vnTitle: vn.title || ''
                         });
                         if (!result.success) {
-                            showToast((t.vndb_import_error || 'Import error: {error}').replace('{error}', result.error || ''));
+                            showToast(() => tt('vndb_import_error', 'Import error: {error}', { error: result.error || '' }));
                             closeModal();
                             return;
                         }
-                        showToast((t.vndb_import_success || 'Imported {imported} entries ({duplicates} were already there)')
-                            .replace('{imported}', result.imported)
-                            .replace('{duplicates}', result.duplicates));
+                        showToast(() => tt('vndb_import_success', 'Imported {imported} entries ({duplicates} were already there)', { imported: result.imported, duplicates: result.duplicates }));
                         closeModal();
                         // The Glosario tab only ever shows the ACTIVE
                         // profile's layer — only reload it if that's the
@@ -2983,7 +3032,7 @@
                         }
                         await loadProfiles();
                     } catch (e) {
-                        showToast((t.vndb_import_error || 'Import error: {error}').replace('{error}', e.message));
+                        showToast(() => tt('vndb_import_error', 'Import error: {error}', { error: e.message }));
                         closeModal();
                     }
                 };
@@ -3086,7 +3135,7 @@
             const browse = await api.browseSaveFile({ title: t.history_export, defaultFileName: 'tuhua-historial.json' });
             if (browse.canceled || !browse.path) return;
             const result = await api.exportHistory(browse.path);
-            if (result.success) showToast((t.history_export_success || 'Exportadas {count} entradas').replace('{count}', result.count));
+            if (result.success) showToast(() => tt('history_export_success', 'Exportadas {count} entradas', { count: result.count }));
         }
 
         // v3.13.40-fix: window.prompt() is not implemented by Electron's
@@ -3094,7 +3143,7 @@
         // native dialog — but prompt() silently returns null with no
         // dialog shown at all). renameProfile/duplicateProfile used
         // prompt() and were consequently dead buttons in the real app —
-        // found via Lyca's real Windows testing, not by running Electron
+        // found via real Windows testing, not by running Electron
         // (can't, in this environment). This is a minimal in-page
         // replacement, Promise-based so call sites read the same as
         // `await prompt(...)` would have.
@@ -3251,12 +3300,12 @@
                 // taller 3-line stack next to it.
                 // v3.13.92: badges trimmed from 7 possible down to 3 (game/
                 // glossary/date) — sourceLang/engineName/inputMethod dropped,
-                // Lyca's call after finding the card "muy amontonado": that
+                // a deliberate call after finding the card "muy amontonado": that
                 // trio duplicates what Configuración already shows for
                 // whichever profile is active.
                 // v3.13.93: Renombrar/Eliminar move off the button row and
                 // onto icon affordances (pencil by the title, trash pinned
-                // to the card's bottom-right corner) — Lyca's call, frees a
+                // to the card's bottom-right corner) — a deliberate call, frees a
                 // whole button's worth of width for the 3 that stay
                 // (Vincular/Cambiar, VNDB, Duplicar). Card needs `relative`
                 // now so the trash icon has something to anchor `absolute`
@@ -3463,7 +3512,7 @@
             if (!profile) return;
             const t = translations[currentLang] || translations['en'];
             if (profile.isDefault) {
-                showToast(t.cannot_delete_default || 'No se puede eliminar el perfil por defecto');
+                showToast(() => tt('cannot_delete_default', 'No se puede eliminar el perfil por defecto'));
                 return;
             }
             // v3.13.40-fix: confirmation requested after real testing.
@@ -3494,7 +3543,7 @@
         }
 
         // ===== GUIDE MODAL =====
-        // v3.13.90 (Fase E follow-up, pedido de Lyca): 4 pestañas, una por
+        // v3.13.90 (Fase E follow-up, pedido explícito): 4 pestañas, una por
         // método de entrada — opens on whichever tab matches the input
         // method currently selected in the sidebar, so the guide is
         // immediately relevant instead of always defaulting to Textractor.
@@ -3529,6 +3578,11 @@
             api.openMailLink();
         }
 
+        // v1.0.16: icono de Ko-fi de la barra superior (destino fijo en main).
+        function openKofiLink() {
+            api.openKofiLink();
+        }
+
         // ===== GATHER CONFIG =====
         // v3.13.8x (settings UX audit): no longer reads the "Overlay" or
         // "Traducción" categories' fields — those live physically in the
@@ -3558,7 +3612,7 @@
                 // save-settings merges ({...currentSettings, ...data}) and
                 // gates the TCP reconnect on `if (data.textractorPort)`, so
                 // leaving the key out preserves whatever port is already
-                // stored (Lyca's install runs on 6677, not the 9251 default —
+                // stored (a real install runs on 6677, not the 9251 default —
                 // sending a hardcoded default here would have silently
                 // overwritten it on the next Save).
                 textractorCliPath: document.getElementById('textractor-cli-path').value.trim(),
@@ -3678,14 +3732,14 @@
                             // Failed to start — revert toggle state
                             translationActive = false;
                             updateToggleUI();
-                            showToast('Error al iniciar servidor XUAT: ' + (result.error || 'Desconocido'));
+                            showToast(() => tt('xuat_start_error', 'Error al iniciar servidor XUAT: {error}', { error: result.error || tt('cli_unknown_error', 'Desconocido') }));
                         } else {
                             updateXuatStatus();
                         }
                     }).catch(err => {
                         translationActive = false;
                         updateToggleUI();
-                        showToast('Error: ' + err.message);
+                        showToast(() => tt('toast_error_generic', 'Error: {error}', { error: err.message }));
                     });
                 } else {
                     // Stop XUAT server
@@ -3888,9 +3942,9 @@
                     if (result && result.success) {
                         await loadProfiles();
                     } else if (result && result.error === 'game-owned-by-other-profile') {
-                        showToast((t.game_owned_by_other_profile || 'Ese juego ya está vinculado al perfil «{profile}».').replace('{profile}', result.profileName || ''));
+                        showToast(() => tt('game_owned_by_other_profile', 'Ese juego ya está vinculado al perfil «{profile}».', { profile: result.profileName || '' }));
                     } else if (result) {
-                        showToast(result.error || (t.game_link_error || 'No se pudo vincular el juego.'));
+                        showToast(result.error || (() => tt('game_link_error', 'No se pudo vincular el juego.')));
                     }
                     return;
                 }
@@ -4107,10 +4161,10 @@
             }
             const t = translations[currentLang] || translations['en'];
             if (!result || !result.success) {
-                const msg = result && result.error === 'game-owned-by-other-profile'
-                    ? (t.game_owned_by_other_profile || 'Ese juego ya está vinculado al perfil «{profile}».').replace('{profile}', result.profileName || '')
-                    : (t.game_link_error || 'No se pudo vincular el juego.');
-                showToast(msg);
+                const owned = result && result.error === 'game-owned-by-other-profile';
+                showToast(() => owned
+                    ? tt('game_owned_by_other_profile', 'Ese juego ya está vinculado al perfil «{profile}».', { profile: result.profileName || '' })
+                    : tt('game_link_error', 'No se pudo vincular el juego.'));
                 return;
             }
             // Only the active-profile path (a) gets the "Deshacer" strip —
@@ -4131,7 +4185,7 @@
             await loadProfiles();
         }
 
-        // v3.13.8x, second pass: real gap Lyca hit — gamePid is
+        // v3.13.8x, second pass: real gap hit — gamePid is
         // deliberately NOT a saved Tier B setting (see gatherConfig()'s own
         // comment on why: a stale PID from a past session is never valid
         // for a new one), so the Save button never reacted to it even
@@ -4272,8 +4326,8 @@
                     _stopGameScanPolling();
                     if (!_gameScanPollHintShown) {
                         _gameScanPollHintShown = true;
-                        const t = translations[currentLang] || translations['en'];
-                        showToast((t.game_scan_poll_gave_up || 'No encontré «{game}» abierto — abrí el juego y tocá 🔍 Buscar juego.').replace('{game}', profile.game.windowTitle || profile.game.exeName || ''));
+                        const gameLabel = profile.game.windowTitle || profile.game.exeName || '';
+                        showToast(() => tt('game_scan_poll_gave_up', 'No encontré «{game}» abierto — abrí el juego y tocá 🔍 Buscar juego.', { game: gameLabel }));
                     }
                     return;
                 }
@@ -4296,7 +4350,7 @@
             const t = translations[currentLang] || translations['en'];
             if (!result || !result.success) {
                 if (manual && result && result.error === 'windows-only') {
-                    showToast(t.game_scan_windows_only || 'Solo disponible en Windows.');
+                    showToast(() => tt('game_scan_windows_only', 'Solo disponible en Windows.'));
                 }
                 return;
             }
@@ -4347,7 +4401,7 @@
             // sólo aquí tiene sentido armar el sondeo (la próxima vez el
             // juego puede no estar abierto todavía) y avisar si fue manual.
             //
-            // v3.13.106: real bug reported by Lyca — closing the linked
+            // v3.13.106: real bug reported in real testing — closing the linked
             // game (Lethal Company) left its engine advisory ("uses Unity,
             // install XUAT") on screen forever, since nothing ever cleared
             // a source==='profile' advisory once the game it described
@@ -4367,7 +4421,7 @@
             }
             _maybeArmGameScanPolling();
             if (manual) {
-                showToast(t.game_scan_not_found || 'No encontré tu juego abierto.');
+                showToast(() => tt('game_scan_not_found', 'No encontré tu juego abierto.'));
             }
         }
 
@@ -4403,7 +4457,7 @@
                 _lastEngineAdvice = { ...resolved.engine, source: 'profile' };
                 renderEngineAdvice();
             }
-            // v3.13.87 (Fase D follow-up): real UX bug Lyca caught testing
+            // v3.13.87 (Fase D follow-up): real UX bug caught testing
             // a Ren'Py game — this used to unconditionally call
             // maybeAutoLaunchTextractor() and say "PID {pid} conectado"
             // regardless of the engine. For a game we ALREADY know
@@ -4423,10 +4477,9 @@
             if (_lastGameAutoResolvedPid !== resolved.pid) {
                 _lastGameAutoResolvedPid = resolved.pid;
                 const t = translations[currentLang] || translations['en'];
-                const template = knownIncompatible
-                    ? (t.game_auto_resolved_incompatible || '🎮 Encontré tu juego — PID {pid}, pero Textractor no puede leerlo (mirá el aviso de arriba)')
-                    : (t.game_auto_resolved || '🎮 Encontré tu juego — PID {pid} conectado');
-                showToast(template.replace('{pid}', resolved.pid));
+                showToast(() => knownIncompatible
+                    ? tt('game_auto_resolved_incompatible', '🎮 Encontré tu juego — PID {pid}, pero Textractor no puede leerlo (mirá el aviso de arriba)', { pid: resolved.pid })
+                    : tt('game_auto_resolved', '🎮 Encontré tu juego — PID {pid} conectado', { pid: resolved.pid }));
             }
         }
 
@@ -4449,7 +4502,7 @@
         // single current game. Given that, #game-pid is correctly a
         // GLOBAL "what Textractor is attached to right now" value, not a
         // per-profile one — showing the same PID across every profile
-        // while it's attached is accurate, not a bug. Lyca's explicit
+        // while it's attached is accurate, not a bug. An explicit
         // call after walking through this.
         function renderGameStatus() {
             const t = translations[currentLang] || translations['en'];
@@ -4463,7 +4516,7 @@
                     // v3.13.85: same cover the profile card shows (set on a
                     // VNDB import, same field the card reads) — a profile
                     // linked to a game AND imported from VNDB gets its
-                    // thumbnail here too, matching Lyca's ask that this look
+                    // thumbnail here too, matching an explicit ask that this look
                     // like the profile card instead of a bare text line.
                     const coverUrl = profile.cover && profile.cover.url ? profile.cover.url : null;
                     if (coverEl) {
@@ -4692,10 +4745,9 @@
             if (result.found) {
                 const input = document.getElementById('textractor-cli-path');
                 if (input) input.value = result.path;
-                const template = t.textractor_autodetect_found || 'Textractor detectado en {path}';
-                showToast(template.replace('{path}', result.path));
+                showToast(() => tt('textractor_autodetect_found', 'Textractor detectado en {path}', { path: result.path }));
             } else {
-                showToast(t.textractor_autodetect_not_found || 'No se encontró Textractor automáticamente — usá "Examinar" para indicar la ruta.');
+                showToast(() => tt('textractor_autodetect_not_found', 'No se encontró Textractor automáticamente — usá "Examinar" para indicar la ruta.'));
             }
         }
 
@@ -4906,7 +4958,7 @@
                     // back to amber "searching" until it proves itself too.
                     cliEverExtracted = false;
                     if (cliStatusHideTimer) { clearTimeout(cliStatusHideTimer); cliStatusHideTimer = null; }
-                    text.innerHTML = '<span class="text-amber-500 pulse-dot">⟳ ' + (cliArchFallbackNotice || t.cli_relaunching_status || 'Switching architecture...') + '</span>';
+                    text.innerHTML = '<span class="text-amber-500 pulse-dot">⟳ ' + ((typeof cliArchFallbackNotice === 'function' ? cliArchFallbackNotice() : cliArchFallbackNotice) || t.cli_relaunching_status || 'Switching architecture...') + '</span>';
                     errorDetail.classList.add('hidden');
                     document.getElementById('btn-kill-cli').classList.remove('hidden');
                     break;
@@ -5332,7 +5384,7 @@
         }
 
         // v3.13.76: the advisory's action button — always an explicit click,
-        // never an automatic switch (Lyca's requirement: suggest, don't
+        // never an automatic switch (the requirement: suggest, don't
         // decide for the user).
         function applyEngineAdvice() {
             const method = _lastEngineAdvice && _lastEngineAdvice.recommendedMethod;
@@ -5378,7 +5430,7 @@
 
         // v3.13.79 (Fase 3, round-3 plan): explicit click only, never an
         // automatic switch — same rule v3.13.76's applyEngineAdvice()
-        // follows (Lyca's requirement: suggest, don't decide for the user).
+        // follows (the requirement: suggest, don't decide for the user).
         function applyOcrEngineAdvice() {
             // setOcrEngine() is normally driven by the <select>'s onchange,
             // where the DOM value has already moved before the handler
@@ -5522,8 +5574,7 @@
                     _lastUpdateStatus = status;
                     renderUpdateBanner();
                     if (status.state === 'up-to-date') {
-                        showToast((t.update_none_toast || "You're on the latest version ({current}).")
-                            .replace('{current}', status.currentVersion || ''));
+                        showToast(() => tt('update_none_toast', "You're on the latest version ({current}).", { current: status.currentVersion || '' }));
                     }
                 }
             } finally {
@@ -5536,7 +5587,7 @@
             const res = await api.downloadUpdate();
             if (res && !res.success) {
                 const t = translations[currentLang] || translations['en'];
-                showToast((t.update_download_failed || 'Download failed: {error}').replace('{error}', res.error || ''));
+                showToast(() => tt('update_download_failed', 'Download failed: {error}', { error: res.error || '' }));
             }
         }
 
@@ -5548,8 +5599,7 @@
             const version = _lastUpdateStatus && _lastUpdateStatus.version;
             const res = await api.skipUpdateVersion();
             if (res && res.success) {
-                showToast((t.update_skipped_toast || 'Version {version} ignored.')
-                    .replace('{version}', version || ''));
+                showToast(() => tt('update_skipped_toast', 'Version {version} ignored.', { version: version || '' }));
             }
         }
 
@@ -5703,17 +5753,17 @@
                 if (xuatServerRunning) {
                     const result = await api.xuatStopServer();
                     if (!result.success) {
-                        showToast('Error al detener: ' + (result.error || 'Desconocido'));
+                        showToast(() => tt('xuat_stop_error', 'Error al detener: {error}', { error: result.error || tt('cli_unknown_error', 'Desconocido') }));
                     }
                 } else {
                     const port = parseInt(document.getElementById('xuat-port').value) || 8419;
                     const result = await api.xuatStartServer(port);
                     if (!result.success) {
-                        showToast('Error al iniciar: ' + (result.error || 'Desconocido'));
+                        showToast(() => tt('xuat_start_error', 'Error al iniciar servidor XUAT: {error}', { error: result.error || tt('cli_unknown_error', 'Desconocido') }));
                     }
                 }
             } catch (err) {
-                showToast('Error: ' + (err.message || 'Desconocido'));
+                showToast(() => tt('toast_error_generic', 'Error: {error}', { error: err.message || tt('cli_unknown_error', 'Desconocido') }));
             }
             // Always refresh status from server after toggle
             await updateXuatStatus();
@@ -5727,16 +5777,16 @@
                 const statusEl = document.getElementById('xuat-server-status');
                 const btnEl = document.getElementById('xuat-toggle-btn');
                 if (status.running) {
-                    statusEl.textContent = `✓ Activo (puerto ${status.port})`;
+                    statusEl.textContent = tt('xuat_status_active', '✓ Activo (puerto {port})', { port: status.port });
                     statusEl.className = 'text-[10px] text-emerald-500 ml-2';
-                    btnEl.textContent = 'Detener';
+                    btnEl.textContent = tt('xuat_btn_stop', 'Detener');
                     btnEl.className = 'px-3 py-1.5 text-[10px] font-bold bg-red-600 hover:bg-red-500 text-white rounded-md transition';
                 } else {
                     // v3.11.3: Show error message if present, or just 'Desactivado'
                     const errorMsg = status.error || '';
-                    statusEl.textContent = errorMsg ? `✗ Error: ${errorMsg.substring(0, 50)}` : 'Desactivado';
+                    statusEl.textContent = errorMsg ? tt('xuat_status_error', '✗ Error: {error}', { error: errorMsg.substring(0, 50) }) : tt('xuat_status_off', 'Desactivado');
                     statusEl.className = errorMsg ? 'text-[10px] text-red-500 ml-2' : 'text-[10px] text-gray-400 ml-2';
-                    btnEl.textContent = 'Iniciar';
+                    btnEl.textContent = tt('xuat_btn_start', 'Iniciar');
                     btnEl.className = 'px-3 py-1.5 text-[10px] font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-md transition';
                 }
                 // v3.11.11: Show both endpoint ID and URL for clarity
@@ -5763,19 +5813,19 @@
             const port = parseInt(document.getElementById('xuat-port').value) || 8419;
             const url = `http://127.0.0.1:${port}/translate?text={0}&from={1}&to={2}`;
             navigator.clipboard.writeText(url);
-            showToast('URL copiada al portapapeles');
+            showToast(() => tt('xuat_url_copied', 'URL copiada al portapapeles'));
         }
 
         async function testXuatEndpoint() {
             try {
                 const result = await api.xuatTestEndpoint();
                 if (result.success) {
-                    showToast(`✓ Servidor XUAT funcionando (puerto ${result.status.port || 'desconocido'})`);
+                    showToast(() => tt('xuat_test_ok', '✓ Servidor XUAT funcionando (puerto {port})', { port: result.status.port || tt('cli_unknown_error', 'Desconocido') }));
                 } else {
-                    showToast('✗ Servidor XUAT no responde: ' + (result.error || 'Error desconocido'));
+                    showToast(() => tt('xuat_test_fail', '✗ Servidor XUAT no responde: {error}', { error: result.error || tt('cli_unknown_error', 'Desconocido') }));
                 }
             } catch (err) {
-                showToast('✗ Error al testear: ' + err.message);
+                showToast(() => tt('xuat_test_error', '✗ Error al testear: {error}', { error: err.message }));
             }
         }
 
@@ -5799,13 +5849,13 @@
                 const detectResult = await api.xuatDetectGame(exePath);
 
                 if (!detectResult.isUnity) {
-                    showToast('No parece ser un juego Unity. XUAT solo funciona con juegos Unity.');
+                    showToast(() => tt('xuat_not_unity', 'No parece ser un juego Unity. XUAT solo funciona con juegos Unity.'));
                     return;
                 }
 
                 // Show progress
                 document.getElementById('xuat-install-progress').classList.remove('hidden');
-                document.getElementById('xuat-install-status').textContent = 'Detectando juego...';
+                document.getElementById('xuat-install-status').textContent = tt('xuat_detecting', 'Detectando juego...');
                 document.getElementById('xuat-install-bar').style.width = '10%';
 
                 const port = parseInt(document.getElementById('xuat-port').value) || 8419;
@@ -5813,21 +5863,21 @@
 
                 if (installResult.success) {
                     document.getElementById('xuat-install-bar').style.width = '100%';
-                    document.getElementById('xuat-install-status').textContent = '¡Instalación completa!';
+                    document.getElementById('xuat-install-status').textContent = tt('xuat_install_done', '¡Instalación completa!');
                     // v3.11.2: Show backend type in success message
                     const backendLabel = installResult.isIL2CPP ? 'IL2CPP' : 'Mono';
-                    showToast(`XUAT instalado correctamente. Inicia el juego para comenzar a traducir.`);
+                    showToast(() => tt('xuat_installed_ok', 'XUAT instalado correctamente. Inicia el juego para comenzar a traducir.'));
                     // Reset translation counter for new game
                     xuatTranslationCount = 0;
                     const countEl = document.getElementById('xuat-translation-count');
                     if (countEl) countEl.textContent = '0';
                     // Show persistent connection status
-                    updateXuatConnectedGame(installResult.gameName || 'Juego', exePath, installResult.isIL2CPP);
+                    updateXuatConnectedGame(installResult.gameName || tt('xuat_game_default', 'Juego'), exePath, installResult.isIL2CPP);
                     setTimeout(() => {
                         document.getElementById('xuat-install-progress').classList.add('hidden');
                     }, 3000);
                 } else {
-                    const rawError = installResult.error || 'Instalación fallida';
+                    const rawError = installResult.error || tt('xuat_install_failed', 'Instalación fallida');
                     // v3.13.109: EBUSY/EPERM/UNKNOWN en un copyfile casi
                     // siempre significa que Windows tiene el DLL abierto —
                     // en la práctica, el juego (o BepInEx ya cargado en él)
@@ -5838,14 +5888,14 @@
                     // para diagnóstico.
                     const looksLikeFileLock = /EBUSY|EPERM|UNKNOWN.*copyfile/i.test(rawError);
                     const friendlyError = looksLikeFileLock
-                        ? 'El juego sigue abierto — cerralo por completo e intentá de nuevo.'
+                        ? tt('xuat_game_locked', 'El juego sigue abierto — cerrálo por completo e intentá de nuevo.')
                         : rawError;
-                    document.getElementById('xuat-install-status').textContent = 'Error: ' + friendlyError;
+                    document.getElementById('xuat-install-status').textContent = tt('toast_error_generic', 'Error: {error}', { error: friendlyError });
                     document.getElementById('xuat-install-bar').style.width = '0%';
-                    showToast('Error al instalar XUAT: ' + friendlyError);
+                    showToast(() => tt('xuat_install_error', 'Error al instalar XUAT: {error}', { error: friendlyError }));
                 }
             } catch (err) {
-                showToast('Error: ' + err.message);
+                showToast(() => tt('toast_error_generic', 'Error: {error}', { error: err.message }));
                 document.getElementById('xuat-install-progress').classList.add('hidden');
             } finally {
                 xuatInstalling = false;
@@ -5859,12 +5909,12 @@
                 const result = await api.xuatClearCache();
                 if (result.success) {
                     const t = translations[currentLang] || translations['en'];
-                    showToast(t.cache_cleared || `Caché limpiada (${result.deleted} archivo(s) eliminado(s))`);
+                    showToast(() => tt('cache_cleared', 'Caché limpiada'));
                 } else {
-                    showToast('Error: ' + (result.error || 'No se pudo limpiar la caché'));
+                    showToast(() => tt('toast_error_generic', 'Error: {error}', { error: result.error || tt('cache_clear_failed', 'No se pudo limpiar la caché') }));
                 }
             } catch (err) {
-                showToast('Error: ' + err.message);
+                showToast(() => tt('toast_error_generic', 'Error: {error}', { error: err.message }));
             }
         }
 
@@ -6127,7 +6177,7 @@
             const isCaseSensitive = document.getElementById(prefix + '-case').checked;
 
             if (!pattern) {
-                showToast(translate('regex_filter_error_no_pattern') || 'Pattern is required');
+                showToast(() => tt('regex_filter_error_no_pattern', 'Pattern is required'));
                 return null;
             }
 
@@ -6135,7 +6185,7 @@
                 try {
                     new RegExp(pattern);
                 } catch (e) {
-                    showToast(`${translate('regex_filter_error_invalid') || 'Invalid regex'}: ${e.message}`);
+                    showToast(() => `${tt('regex_filter_error_invalid', 'Invalid regex')}: ${e.message}`);
                     return null;
                 }
             }
