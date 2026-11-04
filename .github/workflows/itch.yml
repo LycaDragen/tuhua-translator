@@ -1,0 +1,105 @@
+# Sube a itch.io los instaladores de un release de GitHub.
+#
+# CUÁNDO CORRE
+#   - release: published — cuando se PUBLICA un release (el paso de quitarle el borrador).
+#     Esa publicación manual es la compuerta: itch sólo recibe lo que ya se aprobó. No se
+#     engancha al tag a propósito, para no subir a itch un build que luego se descarte.
+#   - workflow_dispatch: para volver a subir un tag concreto a mano (o probar el flujo).
+#
+# QUÉ SUBE
+#   Los instaladores de Windows (.exe) y Linux (.AppImage) a los canales `windows` y `linux`
+#   de itch (el nombre del canal es lo que itch usa para marcar la plataforma). macOS NO se
+#   sube: ese instalador nunca se ha probado en un Mac.
+#
+# QUÉ NECESITA
+#   El secreto del repositorio BUTLER_API_KEY (clave de API de itch.io). No se imprime en
+#   ningún log: GitHub lo enmascara, y no está disponible para workflows de forks.
+#
+# NOTA — la primera vez
+#   Los archivos que se hayan subido a mano por la web quedan como entradas aparte de las que
+#   crea butler (una por canal): hay que borrarlas en la página para no ver cada instalador
+#   duplicado.
+#
+# NOTA — dónde vive este archivo
+#   Un workflow disparado por `release` se lee del commit del tag, así que tiene que estar en
+#   main ANTES de crear el tag de la versión que se quiera subir automáticamente.
+name: Push to itch.io
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag del release a subir a itch.io (ej. v1.0.17)'
+        required: true
+
+permissions:
+  contents: read # sólo para bajar los assets del release
+
+concurrency:
+  group: itch-push
+  cancel-in-progress: false
+
+env:
+  ITCH_TARGET: lycaxdragen/tuhua-translator
+
+jobs:
+  itch:
+    # Un prerelease no se sube a itch (la página muestra sólo versiones estables).
+    if: ${{ github.event_name == 'workflow_dispatch' || !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolver el tag
+        id: tag
+        env:
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          # Se valida el formato antes de usarlo en cualquier comando.
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag inesperado: '$TAG' (se esperaba vX.Y.Z)"; exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Comprobar que existe la clave de itch
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          if [ -z "$BUTLER_API_KEY" ]; then
+            echo "::error::Falta el secreto BUTLER_API_KEY (Settings > Secrets and variables > Actions)"; exit 1
+          fi
+
+      - name: Bajar los instaladores del release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          mkdir dist
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir dist \
+            --pattern '*-win-x64.exe' --pattern '*-linux-x86_64.AppImage'
+          ls -la dist
+          [ "$(ls dist/*-win-x64.exe 2>/dev/null | wc -l)" = "1" ] || { echo "::error::Se esperaba exactamente un .exe"; exit 1; }
+          [ "$(ls dist/*-linux-x86_64.AppImage 2>/dev/null | wc -l)" = "1" ] || { echo "::error::Se esperaba exactamente un .AppImage"; exit 1; }
+          # gh no conserva el bit de ejecución: sin él, el AppImage no arranca al descargarlo desde itch.
+          chmod +x dist/*.AppImage
+
+      - name: Instalar butler
+        run: |
+          curl -fsSL -o butler.zip "https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default"
+          unzip -q butler.zip -d butler-bin
+          chmod +x butler-bin/butler
+          ./butler-bin/butler -V
+
+      - name: Subir a itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          ./butler-bin/butler push dist/*-win-x64.exe "$ITCH_TARGET:windows" --userversion "$VERSION"
+          ./butler-bin/butler push dist/*-linux-x86_64.AppImage "$ITCH_TARGET:linux" --userversion "$VERSION"
+
+      - name: Estado en itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: ./butler-bin/butler status "$ITCH_TARGET"
