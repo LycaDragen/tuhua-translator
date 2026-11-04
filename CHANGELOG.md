@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.0.17] — las notificaciones abiertas ya siguen el cambio de idioma
+
+### Arreglado
+
+- **Con una notificación en pantalla, al cambiar el idioma de la interfaz la notificación se quedaba en el
+  idioma anterior.** Reportado por Lyca (español → inglés). Las notificaciones no se cierran solas (desde
+  v3.13.41), y su texto se armaba una sola vez al aparecer. Ahora cada una guarda *cómo* se arma y
+  `changeLanguage()` la vuelve a armar en el idioma nuevo, conservando el contador «(×N)» de los repetidos.
+  Lo mismo para el aviso ámbar «x64 sin resultado, probando x86…» de la barra de Textractor. Los mensajes
+  crudos de un motor («HTTP 401: …») no se tocan: no hay nada nuestro que traducir ahí.
+- **11 notificaciones del panel de XUAT estaban escritas en español dentro del código** (iniciar/detener el
+  servidor, probarlo, copiar la URL, instalar, «no parece ser un juego Unity», limpiar la caché…): salían en
+  español aunque la interfaz estuviera en inglés. Ahora son claves de traducción en los 8 idiomas.
+- `deepl_reset_instructions + ' ✓' || 'Reset ✓'` nunca podía llegar al `||` (concatenar con `undefined` da un
+  texto, no un valor falso); ahora usa el mismo mecanismo que el resto.
+
+### Interno
+
+- `showToast()` acepta un texto o una función; helper `tt(clave, respaldo, vars)` que lee el idioma al momento
+  de llamar. `scripts/test-toast-notices.js` pasa de 10 a 18 casos (cada defecto verificado reintroduciéndolo),
+  incluida una guardia que falla si alguien vuelve a pasar un texto ya traducido a `showToast()`.
+- Verificado con la app real recorriendo los 8 idiomas con notificaciones abiertas.
+
 ## [1.0.16] — Tuhua abre siempre en pausa (también en XUAT), y un icono de Ko-fi
 
 ### Arreglado
