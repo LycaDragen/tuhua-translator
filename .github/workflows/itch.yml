@@ -102,4 +102,6 @@ jobs:
       - name: Estado en itch.io
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
-        run: ./butler-bin/butler status "$ITCH_TARGET"
+        run: |
+          ./butler-bin/butler status "$ITCH_TARGET:windows"
+          ./butler-bin/butler status "$ITCH_TARGET:linux"
