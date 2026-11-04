@@ -250,6 +250,14 @@ class IpcHandlers {
       return { success: true };
     });
 
+    // v1.0.16: el icono de Ko-fi de la barra superior. Mismo patrón que
+    // open-docs-link: el destino es un literal fijo acá, no una URL que sube
+    // el renderer — no se expone ningún "abrir URL arbitraria".
+    ipcMain.handle('open-kofi-link', () => {
+      shell.openExternal('https://ko-fi.com/lycadragen');
+      return { success: true };
+    });
+
     // v3.13.58 (LLM engine overhaul, Fase 3): read-only — llm-providers.js
     // lives in the main process (src/services/) and isn't reachable from
     // the sandboxed renderer via require(), so this is what feeds the
@@ -2926,7 +2934,7 @@ class IpcHandlers {
       'ocr-toggle-scan',
       'textractor-browse-cli', 'textractor-clear-cli-path', 'textractor-launch',
       'list-game-processes', 'inspect-game', 'set-profile-game', 'find-profile-by-title', 'scan-known-games', 'get-textractor-auto-detect-result',
-      'open-docs-link', 'open-mail-link',
+      'open-docs-link', 'open-mail-link', 'open-kofi-link',
       'textractor-kill', 'textractor-cli-status',
       'textractor-select-hook', 'textractor-test-cli', 'resize-overlay', 'get-debug-logs',
       'xuat-start-server', 'xuat-stop-server', 'xuat-get-status',

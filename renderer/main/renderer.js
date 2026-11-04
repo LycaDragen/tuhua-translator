@@ -3529,6 +3529,11 @@
             api.openMailLink();
         }
 
+        // v1.0.16: icono de Ko-fi de la barra superior (destino fijo en main).
+        function openKofiLink() {
+            api.openKofiLink();
+        }
+
         // ===== GATHER CONFIG =====
         // v3.13.8x (settings UX audit): no longer reads the "Overlay" or
         // "Traducción" categories' fields — those live physically in the

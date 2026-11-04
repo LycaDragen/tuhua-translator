@@ -194,7 +194,10 @@
             <img src="assets/icon-256.png" alt="Tuhua" class="w-8 h-8 rounded-lg shadow-lg shadow-emerald-500/20 object-contain">
             <div>
                 <span class="font-bold text-base tracking-tight">Tuhua <span class="text-emerald-600 dark:text-emerald-400">Translator</span></span>
-                <span class="text-[10px] text-gray-400 ml-1.5" data-i18n="app_subtitle">Open Source VN Translator</span><span id="app-version-badge" class="text-[9px] font-mono text-emerald-500/70 bg-emerald-500/10 px-1.5 py-0.5 rounded ml-1.5"></span>
+                <!-- v1.0.16: oculto por debajo de 860px. Con el icono de Ko-fi la barra ya no
+                     entra a 800px (el mínimo de la app) y el subtítulo se partía en dos
+                     líneas; verificado antes/después con capturas. -->
+                <span class="hidden min-[860px]:inline text-[10px] text-gray-400 ml-1.5" data-i18n="app_subtitle">Open Source VN Translator</span><span id="app-version-badge" class="text-[9px] font-mono text-emerald-500/70 bg-emerald-500/10 px-1.5 py-0.5 rounded ml-1.5"></span>
             </div>
         </div>
         <div class="flex items-center gap-3">
@@ -222,6 +225,14 @@
             <button onclick="toggleTheme()" class="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-dark-700 transition text-yellow-500 dark:text-yellow-300" aria-label="Toggle Theme">
                 <svg id="theme-icon-sun" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/></svg>
                 <svg id="theme-icon-moon" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+            </button>
+            <!-- Ko-fi (v1.0.16): apagado a propósito (gris, sin texto, sin
+                 animación) para no competir con los controles de verdad; sólo
+                 se tiñe con el rojo de Ko-fi al pasar el mouse. La barra ya
+                 tiene cinco elementos, por eso es un icono de 16px y no un
+                 botón con etiqueta. Abre https://ko-fi.com/lycadragen. -->
+            <button onclick="openKofiLink()" class="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-dark-700 transition text-gray-400 hover:text-[#FF5E5B] dark:hover:text-[#FF5E5B]" data-i18n-title="kofi_title" title="Apoyar a Tuhua en Ko-fi" aria-label="Ko-fi">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9h13v6a4 4 0 01-4 4H7a4 4 0 01-4-4V9zm13 1h2a2.5 2.5 0 010 5h-2M7 3.5c0 1 1 1 1 2s-1 1-1 2m4-4c0 1 1 1 1 2s-1 1-1 2"/></svg>
             </button>
             <!-- Guide -->
             <button onclick="toggleGuide(true)" class="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-dark-700 transition text-blue-500" title="Setup Guide">

@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.0.16] — Tuhua abre siempre en pausa (también en XUAT), y un icono de Ko-fi
+
+### Arreglado
+
+- **En modo XUAT, Tuhua se abría «Activo» con el servidor ya levantado.** Lyca pidió que la app abra
+  siempre en pausa, pero no lo veía: el arranque pausado de v1.0.x dejaba a XUAT como excepción (el
+  razonamiento era que `translationActive` no afecta a XUAT, y eso era sólo a medias cierto — el ▶/⏸ del
+  panel en modo XUAT sí enciende y apaga el servidor). El log de Windows lo confirmó: días de arranques
+  con `Starting in XUAT mode` y el servidor escuchando a los 2 segundos. Ahora XUAT arranca como los
+  demás: pausado, servidor sin levantar, puerto 8419 cerrado hasta tocar ▶ Activo. Verificado con la app
+  real: arranque con `translationActive: true` guardado → PAUSADO y puerto cerrado; ▶ → ACTIVO y puerto
+  abierto; ⏸ → vuelve a cerrarse. Textractor, Portapapeles y OCR siguen igual.
+- **Contrapartida, a propósito:** un juego con XUnity ya abierto no recibe traducción hasta que se toque
+  ▶ Activo en Tuhua.
+
+### Añadido
+
+- **Icono de Ko-fi** (una taza, gris) en la barra superior, entre el tema y la guía: abre
+  `https://ko-fi.com/lycadragen`. Sólo se tiñe de rojo al pasar el mouse. El destino es fijo en el
+  proceso principal (el renderer no puede pedir abrir otra URL). Tooltip en los 8 idiomas.
+- Por debajo de 860 px de ancho se oculta el subtítulo «Traductor VN de Código Abierto» de la barra:
+  con el icono nuevo ya no cabía a 800 px (el mínimo de la ventana) y se partía en dos líneas.
+
+### Interno
+
+- Banco nuevo `scripts/test-startup-paused-kofi.js` (8 casos; cada defecto verificado reintroduciéndolo —
+  y uno de ellos mostró que el primer check no detectaba la excepción de XUAT, así que se corrigió).
+
 ## [1.0.15] — en Linux con Wayland, el OCR ya no pide elegir pantalla en cada captura
 
 ### Arreglado

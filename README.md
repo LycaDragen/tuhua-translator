@@ -106,6 +106,7 @@ Integra con [XUnity.AutoTranslator](https://github.com/bbepis/XUnity.AutoTransla
 - Detección automática del backend (Mono/IL2CPP)
 - El texto traducido aparece dentro del juego, sin overlay
 - Puerto configurable (por defecto: 8419)
+- Como todos los métodos, Tuhua abre en pausa: el servidor se levanta al tocar **▶ Activo**
 
 ---
 
@@ -295,7 +296,7 @@ Para más detalles, consulta el archivo [LICENSE](LICENSE) o visita [creativecom
 
 **Lyca** — [sebaguerra6@gmail.com](mailto:sebaguerra6@gmail.com)
 
-Si te gusta este proyecto, considera dejar una ⭐ en GitHub.
+Si te gusta este proyecto, considera dejar una ⭐ en GitHub. Tuhua es gratis; si querés apoyarlo, hay un icono de café discreto en la barra superior de la app (o directo en [ko-fi.com/lycadragen](https://ko-fi.com/lycadragen)) — es totalmente opcional.
 
 ---
 

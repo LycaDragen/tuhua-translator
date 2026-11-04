@@ -510,36 +510,32 @@ app.whenReady().then(() => {
   // other branches below), so it relied on Electron's implicit show:true
   // default, which real Windows focus/z-order quirks around
   // transparent/alwaysOnTop windows can silently defeat. The FIX for both
-  // is the same: never start "active" at all, for any input method that
-  // isn't XUAT — matching the OCR treatment Lyca already confirmed working,
+  // is the same: never start "active" at all, for any input method —
+  // matching the OCR treatment Lyca already confirmed working,
   // generalized per his explicit ask ("siempre que Tuhua se cierre y se
   // vuelva a abrir debe iniciar pausado").
   //
-  // XUAT is the one deliberate exception, unchanged: its translation runs
-  // through XUnity.AutoTranslator hitting xuat-server.js's own HTTP
-  // endpoint directly, completely independent of `_translationActive` —
-  // that flag has zero effect on whether XUAT actually translates, it only
-  // controls Tuhua's own overlay/badge display. Forcing it to show
-  // "Paused" here would just be misleading UI while XUAT keeps working
-  // exactly the same underneath.
-  if (settings.inputMethod === 'xuat') {
-    ipcHandlers._translationActive = true;
-    windowManager.hideOutputOverlay();
-    windowManager.clearOverlayContent();
-    log.info('Starting in XUAT mode — overlay hidden (XUAT renders in-game)');
-  } else {
-    // store.set (not just the in-memory flag) so the renderer's own
-    // get-settings call — which happens later, once the window has
-    // loaded — reflects the same paused state instead of showing a
-    // misleading "Active" toggle.
-    ipcHandlers._translationActive = false;
-    if (settings.translationActive !== false) {
-      store.set('translationActive', false);
-    }
-    windowManager.hideOutputOverlay();
-    windowManager.clearOverlayContent();
-    log.info(`Starting in ${settings.inputMethod || 'textractor'} mode — forced to paused; press ▶ Activo to begin`);
+  // v1.0.16: XUAT YA NO es la excepción. Lyca volvió a pedirlo ("cuando se
+  // cierra y se vuelve a abrir debería venir pausado") y el log de Windows
+  // mostró por qué no lo veía: llevaba días usando XUAT, y este bloque lo
+  // dejaba activo con el servidor ya levantado. El argumento de la excepción
+  // ("_translationActive no afecta a XUAT") era a medias cierto: el play/pause
+  // del renderer en modo XUAT SÍ controla el servidor (toggleTranslationActive
+  // → xuatStartServer/xuatStopServer, y updateXuatStatus() sincroniza el botón
+  // con `status.running`). Así que "pausado" en XUAT significa "servidor sin
+  // levantar hasta que se aprieta ▶", igual que en los demás métodos. El
+  // juego con XUnity abierto simplemente no recibe traducción hasta entonces.
+  //
+  // store.set (no sólo el flag en memoria) para que el get-settings del
+  // renderer, que llega después, muestre ya el estado pausado en vez de un
+  // "Activo" engañoso.
+  ipcHandlers._translationActive = false;
+  if (settings.translationActive !== false) {
+    store.set('translationActive', false);
   }
+  windowManager.hideOutputOverlay();
+  windowManager.clearOverlayContent();
+  log.info(`Starting in ${settings.inputMethod || 'textractor'} mode — forced to paused; press ▶ Activo to begin`);
 
   // Connect Textractor text events to translation pipeline
   textractor.on('text', (text) => {
@@ -605,14 +601,10 @@ app.whenReady().then(() => {
 
   // Start the appropriate input method based on saved settings
   if (settings.inputMethod === 'xuat') {
-    log.info('Starting in XUAT mode, port:', settings.xuatPort || 8419);
-    // XUAT doesn't need the output overlay — translations appear in-game
-    // (overlay already hidden above during initialization)
-    xuatServer.start().then(() => {
-      windowManager.sendToMainWindow('textractor-status', 'xuat');
-    }).catch(err => {
-      log.error('[XUAT] Failed to start:', err.message);
-    });
+    // v1.0.16: arranca pausado como los demás — el servidor NO se levanta acá;
+    // lo levanta el ▶ Activo del renderer (xuatStartServer). XUAT no necesita
+    // el overlay de salida: las traducciones aparecen dentro del juego.
+    log.info('Starting in XUAT mode, port:', settings.xuatPort || 8419, '— servidor sin levantar hasta apretar ▶ Activo');
   } else if (settings.inputMethod === 'clipboard') {
     log.info('Starting in Clipboard mode');
     clipboardWatcher.start();
