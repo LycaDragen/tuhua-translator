@@ -499,7 +499,7 @@ app.whenReady().then(() => {
   ipcHandlers.register();
 
   // v3.13.07: Improved startup overlay state management.
-  // v3.13.115: Lyca reported Tuhua always launching "Active" if it was
+  // v3.13.115: Tuhua was always launching "Active" if it was
   // active when last closed — because ONLY OCR (v3.13.48) forced a paused
   // startup; Textractor/Clipboard just restored whatever translationActive
   // was persisted. Two real symptoms from that gap: (1) the app comes up
@@ -511,14 +511,13 @@ app.whenReady().then(() => {
   // default, which real Windows focus/z-order quirks around
   // transparent/alwaysOnTop windows can silently defeat. The FIX for both
   // is the same: never start "active" at all, for any input method —
-  // matching the OCR treatment Lyca already confirmed working,
-  // generalized per his explicit ask ("siempre que Tuhua se cierre y se
-  // vuelva a abrir debe iniciar pausado").
+  // matching the OCR treatment already confirmed working,
+  // generalized per the explicit requirement that Tuhua always start
+  // paused after being closed and reopened.
   //
-  // v1.0.16: XUAT YA NO es la excepción. Lyca volvió a pedirlo ("cuando se
-  // cierra y se vuelve a abrir debería venir pausado") y el log de Windows
-  // mostró por qué no lo veía: llevaba días usando XUAT, y este bloque lo
-  // dejaba activo con el servidor ya levantado. El argumento de la excepción
+  // v1.0.16: XUAT YA NO es la excepción. Con XUAT la app seguía abriendo
+  // activa, porque este bloque lo dejaba activo con el servidor ya
+  // levantado (lo mostraba el log: "Starting in XUAT mode"). El argumento de la excepción
   // ("_translationActive no afecta a XUAT") era a medias cierto: el play/pause
   // del renderer en modo XUAT SÍ controla el servidor (toggleTranslationActive
   // → xuatStartServer/xuatStopServer, y updateXuatStatus() sincroniza el botón

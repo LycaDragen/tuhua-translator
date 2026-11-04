@@ -13,7 +13,7 @@
  * saying it was preserved; the l/1 misread fix was destroying real numbers
  * ("Level1"->"Levell", "F1"->"Fl"); the trailing-word truncation was eating
  * real short words ("It is OK"->"It is", "12:45 PM"->"12:45"); and — found
- * live, Lyca saw "Well" silently skipped every single capture in session50
+ * live, "Well" was silently skipped on every single capture in session50
  * — _isMostlyGarbled() had a blanket `text.length < 5 -> garbled` floor
  * that ran BEFORE the CJK exemption, so it killed every short real result
  * regardless of script (English 4-letter interjections, short CJK replies)
@@ -69,7 +69,7 @@ const CASES = [
   { id: 'ok-not-truncated', fn: 'tesseract', input: 'It is OK', expected: 'It is OK' },
   { id: 'pm-not-truncated', fn: 'tesseract', input: '12:45 PM', expected: '12:45 PM' },
   { id: 'button-prompt-x-to-preserved', fn: 'tesseract', input: 'Press X to', expected: 'Press X to',
-    note: 'Same family as the "I" bug (Lyca flagged it after seeing the first bench run): the lone-single-letter filter was deleting real button-prompt letters ("Press X to skip"). Protected via isProtectedButtonLetter() context check — a prompt verb before or a prompt continuation after the letter.' },
+    note: 'Same family as the "I" bug (flagged after seeing the first bench run): the lone-single-letter filter was deleting real button-prompt letters ("Press X to skip"). Protected via isProtectedButtonLetter() context check — a prompt verb before or a prompt continuation after the letter.' },
   { id: 'button-prompt-x-at-end-preserved', fn: 'tesseract', input: 'Press X', expected: 'Press X',
     note: 'The harder case: no trailing "to" to protect it via BUTTON_PROMPT_AFTER — Step 11 (trailing-word truncation) has to independently recognize the same context, or it strips right back what Step 10 just preserved.' },
   { id: 'button-prompt-hold-a-preserved', fn: 'tesseract', input: 'Hold A', expected: 'Hold A' },

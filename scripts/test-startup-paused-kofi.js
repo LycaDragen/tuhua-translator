@@ -1,10 +1,9 @@
 /**
  * Arranque siempre pausado (también XUAT) y enlace de Ko-fi — bench de v1.0.16.
  *
- * Lyca pidió que Tuhua "venga pausado por defecto" al reabrir. Tres métodos ya
- * lo hacían; XUAT era una excepción deliberada, y como Lyca llevaba días usando
- * XUAT nunca lo veía: el log de Windows mostraba "Starting in XUAT mode" con el
- * servidor ya levantado. Este bench fija que (a) ningún método queda exento,
+ * Tuhua debe abrir siempre en pausa. Tres métodos ya lo hacían; XUAT era una
+ * excepción deliberada, y por eso en modo XUAT la app abría activa: el log mostraba
+ * "Starting in XUAT mode" con el servidor ya levantado. Este bench fija que (a) ningún método queda exento,
  * (b) el arranque XUAT no levanta el servidor, y (c) el icono de Ko-fi apunta a
  * un destino fijo, con el canal registrado en todos los lados que tienen que
  * saberlo.

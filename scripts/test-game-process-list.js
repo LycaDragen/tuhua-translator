@@ -86,7 +86,7 @@ check('missing-mainwindowtitle-defaults-to-empty-string-not-undefined', () => {
 });
 
 check('itch-io-launcher-is-excluded-from-the-process-list', () => {
-  // v3.13.88: real bug (Lyca, 2026-08-24) — the itch.io desktop client
+  // v3.13.88: real bug (2026-08-24) — the itch.io desktop client
   // qualifies for the picker's own filter (real window + real path) just
   // like the VN it launches, so it showed up as a pickable "game" and got
   // linked by mistake, poisoning both the profile suggestion and

@@ -37,7 +37,7 @@ function contenedorDe(src, id) {
 }
 
 check('el-bug-reportado-la-fila-del-badge-y-los-botones-se-reacomoda', () => {
-  // Lyca, Windows, v1.0.7: "cuando se disminuye el espacio que tiene la
+  // Windows, v1.0.7, reported: "cuando se disminuye el espacio que tiene la
   // columna de la derecha, los botones salen de su contenedor visualmente en
   // lugar de reordenarse". Reproducido en un Electron real arrastrando el
   // sidebar: sin `flex-wrap`, el badge de estado ("Modo OCR") se ENCIMA con

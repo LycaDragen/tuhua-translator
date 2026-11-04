@@ -77,7 +77,7 @@ check('containsCJK-detects-cjk-anywhere-in-the-string', () => {
 });
 
 // ─── word-boundary guard on non-CJK, non-Latin scripts ─────────────────────
-// Lyca asked specifically not to limit testing to well-known languages —
+// Testing is deliberately not limited to well-known languages —
 // this is the bug that surfaced from actually doing that: the guard used
 // to be gated on "is the term ALL-LATIN" (ASCII only), so a Cyrillic term
 // fell through to plain substring matching and corrupted a real word.

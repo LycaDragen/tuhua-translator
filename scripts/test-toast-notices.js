@@ -149,7 +149,7 @@ check('a-normal-translation-shows-no-toast', () => {
 });
 
 // ─── Cambio de idioma con un toast abierto (v1.0.17) ─────────────────────
-// Reportado por Lyca: con una notificación en pantalla en español, al pasar
+// Reportado: con una notificación en pantalla en español, al pasar
 // la interfaz a inglés la notificación seguía en español. Un toast no se
 // auto-cierra, así que se quedaba así hasta cerrarlo a mano.
 function langHarness() {

@@ -71,16 +71,17 @@
     "test:startup-paused-kofi": "node scripts/test-startup-paused-kofi.js",
     "test:i18n-placeholders": "node scripts/test-i18n-placeholders.js",
     "test:capture-area-i18n": "node scripts/test-capture-area-i18n.js",
-    "test:license-wording": "node scripts/test-license-wording.js"
+    "test:license-wording": "node scripts/test-license-wording.js",
+    "test:public-hygiene": "node scripts/test-public-hygiene.js"
   },
   "author": {
     "name": "Lyca",
-    "email": "sebaguerra6@gmail.com"
+    "email": "help@tuhua.lyca.dev"
   },
   "contributors": [
     {
       "name": "Lyca",
-      "email": "sebaguerra6@gmail.com"
+      "email": "help@tuhua.lyca.dev"
     }
   ],
   "license": "CC-BY-NC-4.0",

@@ -14,7 +14,7 @@
  *  - v1.0.7 arregla que se recordara texto llegado EN PAUSA (esa era la vía
  *    por la que una API key copiada al portapapeles terminó en Google
  *    Translate).
- *  - v1.0.8 (esto) cierra la otra mitad, encontrada por Lyca probando lo
+ *  - v1.0.8 (esto) cierra la otra mitad, encontrada probando lo
  *    anterior en Windows: estando en pausa, cambiar un ajuste igual mandaba a
  *    la red la última línea YA recordada. El log lo decía sin querer —
  *    "Settings changed while text is on-screen"— cuando la pausa había

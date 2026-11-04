@@ -325,7 +325,7 @@
             engineApiKeys.llm = { ...(settings.llmProviderKeys || {}) };
             // v3.13.80 fix: restore deeplCustomInstructions UNCONDITIONALLY —
             // not gated behind `savedEngine === 'deepl'` like the rest of this
-            // block. Real bug found live by Lyca: `engine` is ALSO
+            // block. Real bug found live: `engine` is ALSO
             // profile-scoped, so a freshly created blank profile (default
             // engine: 'google-free') flips the dropdown away from DeepL on
             // load — but this restore used to live INSIDE the DeepL-only
@@ -343,7 +343,7 @@
                     : '';
             updateDeepLInstructionsCount();
             updateDeepLInstructionsUI();
-            // v3.13.80: formality is profile-scoped now too (Lyca's explicit
+            // v3.13.80: formality is profile-scoped now too (an explicit
             // request) — same fix as deeplCustomInstructions just above, and
             // for the identical reason: this used to live inside the
             // DeepL-only branch below, so switching to a profile whose own
@@ -351,7 +351,7 @@
             // dropdown showing the PREVIOUS profile's formality. Must always
             // run. '' (a blank/unseeded profile) falls back to 'default' for
             // display, matching deepl.js's setFormality() fallback — changed
-            // from 'prefer_more' on Lyca's explicit request, since defaulting
+            // from 'prefer_more' on an explicit request, since defaulting
             // every new profile to formal/usted was actively wrong for
             // casual VN dialogue, not just an arbitrary choice. That
             // fallback is NOT written back to the profile just for being
@@ -603,7 +603,7 @@
         // in the modal (say, the OCR interval slider) also lit up the
         // SIDEBAR's button, and clicking that sidebar button would show
         // "✓ ¡Guardado!" without having saved the modal field at all
-        // (gatherConfig() doesn't read it). Real bug Lyca hit from the
+        // (gatherConfig() doesn't read it). Real bug hit from the
         // other direction: close the gear modal without clicking Aplicar,
         // reopen it, the button was still green because nothing had ever
         // cleared modalDirty for a change that was never actually
@@ -672,7 +672,7 @@
 
         // v3.13.8x (settings UX audit): the checkmark icon on save-btn/
         // settings-apply-btn used to be permanent button chrome, always
-        // visible even at rest — Lyca's feedback was that it should read
+        // visible even at rest — user feedback was that it should read
         // as "this just saved," not decoration. Shown only for this flash
         // window (2.5s), then hidden again — matches the ✓ text swap that
         // was already there, just extends it to the icon too. Guarded
@@ -745,8 +745,8 @@
             // Windows mostramos directamente la sigla del idioma en mayúsculas.
             // v3.13.110: 🌐 (auto) y 📜 (lzh) SÍ renderizan bien en Windows
             // (no son banderas compuestas), pero dejarlos como emoji mientras
-            // el resto pasa a sigla generaba una mezcla inconsistente — Lyca
-            // pidió todo-bandera o todo-sigla, nunca mitad y mitad. Ahora
+            // el resto pasa a sigla generaba una mezcla inconsistente —
+            // el criterio es todo-bandera o todo-sigla, nunca mitad y mitad. Ahora
             // isWindows convierte los 21 códigos por igual, sin excepción.
             const isWindows = api && api.platform === 'win32';
             document.querySelectorAll('[data-i18n-lang]').forEach(opt => {
@@ -777,7 +777,7 @@
             // change, never on a language switch. The <option> text above just
             // got retranslated, but this cached copy didn't, so it stayed
             // stuck in whatever language was active at the last engine change
-            // (real bug reported by Lyca: sidebar dropdown showed the new
+            // (real bug reported in real testing: sidebar dropdown showed the new
             // language correctly, this label kept showing Spanish).
             const engineSelectEl = document.getElementById('engine-select');
             const displayEngineEl = document.getElementById('display-engine');
@@ -874,7 +874,7 @@
         }
 
         // ===== SIDEBAR RESIZE =====
-        // v3.13.94 (Lyca's ask): the sidebar already grows automatically
+        // v3.13.94 (requested): the sidebar already grows automatically
         // with the window (v3.13.93), but he wanted to be able to drag it
         // wider still — past whatever the window itself provides — and
         // shrink the play-button column down to it, since that column
@@ -975,7 +975,7 @@
                 if (!dragging) return;
                 dragging = false;
                 if (!dragStarted) {
-                    // v3.13.97: real confusion this caused — Lyca had
+                    // v3.13.97: real confusion this caused — someone had
                     // dragged the handle while testing the broken
                     // v3.13.94/95 drag, and that width stayed persisted;
                     // the NEXT launch (already on the fixed v3.13.96)
@@ -1036,7 +1036,7 @@
 
         // ===== SETTINGS MODAL =====
         // v3.13.100 (settings tabs): replaces the old collapsible-category
-        // accordion (_settingsCatState/toggleSettingsCategory) — Lyca's
+        // accordion (_settingsCatState/toggleSettingsCategory) — a deliberate
         // call, no real benefit to two categories open at once when
         // neither fits on screen without scrolling anyway. Remembers the
         // last tab viewed for the rest of the session (not persisted to
@@ -1073,7 +1073,7 @@
                     // Load regex filters for the Text Filter category
                     loadRegexFilters();
                 } else if (modalDirty) {
-                    // v3.13.8x (settings UX audit): Lyca's real report —
+                    // v3.13.8x (settings UX audit): a real report —
                     // change something in the modal (e.g. the OCR interval
                     // slider), close via the × or the backdrop without
                     // clicking "Aplicar", reopen: the button was still
@@ -1856,7 +1856,7 @@
             }
             // v3.13.6x (Fase 9 testing follow-up, ronda 4): pipeline.js has
             // sent isFallback:true since the fallback chain existed — this
-            // was the first UI code to ever read that field. Lyca noticed
+            // was the first UI code to ever read that field. It was noticed that
             // an invalid API key produced no visible signal at all (not
             // even the persistent-toast pattern already used for the
             // Textractor arch-fallback and PaddleOCR->Tesseract fallbacks).
@@ -1917,7 +1917,7 @@
         // messages (import results, error details) didn't stay up long
         // enough to read.
         // v3.13.6x (Fase 9 testing follow-up, ronda 5): was a single-slot
-        // toast (a new call replaced whatever was showing) — Lyca noticed
+        // toast (a new call replaced whatever was showing) — it was noticed
         // that a fallback/error notification could fire while an earlier
         // toast was still up unclosed, and the new one silently replaced
         // it instead of both being visible. Now a stack: each call adds a
@@ -2060,7 +2060,7 @@
                 // v1.0.2: mismo bug que el de 'retranslate' de acá arriba, y
                 // por la misma razón — el atajo se registraba en shortcuts.js
                 // y emitía el evento, pero esta rama no existía, así que
-                // Ctrl+Shift+O nunca hizo nada. Reportado por Lyca probando
+                // Ctrl+Shift+O nunca hizo nada. Reportado probando
                 // los atajos documentados.
                 cycleOverlayOpacity();
             }
@@ -2088,7 +2088,7 @@
             // cuando apretó el atajo. Un toast acá además se apila —
             // showToast() no se auto-cierra (ver su doc comment), así que
             // ciclar cuatro veces dejaba cuatro carteles que hay que cerrar
-            // a mano. Reportado por Lyca: "hace flood".
+            // a mano. Reportado: "hace flood".
         }
 
         // ===== FONT FAMILY =====
@@ -2134,7 +2134,7 @@
         }
 
         // v3.13.8x: live preview while dragging font-size-range/
-        // opacity-range — Lyca asked for the overlay to visibly update
+        // opacity-range — the overlay must visibly update
         // WHILE dragging, not only on release. Debounced (~80ms) rather
         // than called on every 'input' tick: each call is a real
         // electron-store write (synchronous disk I/O), and a slider fires
@@ -3143,7 +3143,7 @@
         // native dialog — but prompt() silently returns null with no
         // dialog shown at all). renameProfile/duplicateProfile used
         // prompt() and were consequently dead buttons in the real app —
-        // found via Lyca's real Windows testing, not by running Electron
+        // found via real Windows testing, not by running Electron
         // (can't, in this environment). This is a minimal in-page
         // replacement, Promise-based so call sites read the same as
         // `await prompt(...)` would have.
@@ -3300,12 +3300,12 @@
                 // taller 3-line stack next to it.
                 // v3.13.92: badges trimmed from 7 possible down to 3 (game/
                 // glossary/date) — sourceLang/engineName/inputMethod dropped,
-                // Lyca's call after finding the card "muy amontonado": that
+                // a deliberate call after finding the card "muy amontonado": that
                 // trio duplicates what Configuración already shows for
                 // whichever profile is active.
                 // v3.13.93: Renombrar/Eliminar move off the button row and
                 // onto icon affordances (pencil by the title, trash pinned
-                // to the card's bottom-right corner) — Lyca's call, frees a
+                // to the card's bottom-right corner) — a deliberate call, frees a
                 // whole button's worth of width for the 3 that stay
                 // (Vincular/Cambiar, VNDB, Duplicar). Card needs `relative`
                 // now so the trash icon has something to anchor `absolute`
@@ -3543,7 +3543,7 @@
         }
 
         // ===== GUIDE MODAL =====
-        // v3.13.90 (Fase E follow-up, pedido de Lyca): 4 pestañas, una por
+        // v3.13.90 (Fase E follow-up, pedido explícito): 4 pestañas, una por
         // método de entrada — opens on whichever tab matches the input
         // method currently selected in the sidebar, so the guide is
         // immediately relevant instead of always defaulting to Textractor.
@@ -3612,7 +3612,7 @@
                 // save-settings merges ({...currentSettings, ...data}) and
                 // gates the TCP reconnect on `if (data.textractorPort)`, so
                 // leaving the key out preserves whatever port is already
-                // stored (Lyca's install runs on 6677, not the 9251 default —
+                // stored (a real install runs on 6677, not the 9251 default —
                 // sending a hardcoded default here would have silently
                 // overwritten it on the next Save).
                 textractorCliPath: document.getElementById('textractor-cli-path').value.trim(),
@@ -4185,7 +4185,7 @@
             await loadProfiles();
         }
 
-        // v3.13.8x, second pass: real gap Lyca hit — gamePid is
+        // v3.13.8x, second pass: real gap hit — gamePid is
         // deliberately NOT a saved Tier B setting (see gatherConfig()'s own
         // comment on why: a stale PID from a past session is never valid
         // for a new one), so the Save button never reacted to it even
@@ -4401,7 +4401,7 @@
             // sólo aquí tiene sentido armar el sondeo (la próxima vez el
             // juego puede no estar abierto todavía) y avisar si fue manual.
             //
-            // v3.13.106: real bug reported by Lyca — closing the linked
+            // v3.13.106: real bug reported in real testing — closing the linked
             // game (Lethal Company) left its engine advisory ("uses Unity,
             // install XUAT") on screen forever, since nothing ever cleared
             // a source==='profile' advisory once the game it described
@@ -4457,7 +4457,7 @@
                 _lastEngineAdvice = { ...resolved.engine, source: 'profile' };
                 renderEngineAdvice();
             }
-            // v3.13.87 (Fase D follow-up): real UX bug Lyca caught testing
+            // v3.13.87 (Fase D follow-up): real UX bug caught testing
             // a Ren'Py game — this used to unconditionally call
             // maybeAutoLaunchTextractor() and say "PID {pid} conectado"
             // regardless of the engine. For a game we ALREADY know
@@ -4502,7 +4502,7 @@
         // single current game. Given that, #game-pid is correctly a
         // GLOBAL "what Textractor is attached to right now" value, not a
         // per-profile one — showing the same PID across every profile
-        // while it's attached is accurate, not a bug. Lyca's explicit
+        // while it's attached is accurate, not a bug. An explicit
         // call after walking through this.
         function renderGameStatus() {
             const t = translations[currentLang] || translations['en'];
@@ -4516,7 +4516,7 @@
                     // v3.13.85: same cover the profile card shows (set on a
                     // VNDB import, same field the card reads) — a profile
                     // linked to a game AND imported from VNDB gets its
-                    // thumbnail here too, matching Lyca's ask that this look
+                    // thumbnail here too, matching an explicit ask that this look
                     // like the profile card instead of a bare text line.
                     const coverUrl = profile.cover && profile.cover.url ? profile.cover.url : null;
                     if (coverEl) {
@@ -5384,7 +5384,7 @@
         }
 
         // v3.13.76: the advisory's action button — always an explicit click,
-        // never an automatic switch (Lyca's requirement: suggest, don't
+        // never an automatic switch (the requirement: suggest, don't
         // decide for the user).
         function applyEngineAdvice() {
             const method = _lastEngineAdvice && _lastEngineAdvice.recommendedMethod;
@@ -5430,7 +5430,7 @@
 
         // v3.13.79 (Fase 3, round-3 plan): explicit click only, never an
         // automatic switch — same rule v3.13.76's applyEngineAdvice()
-        // follows (Lyca's requirement: suggest, don't decide for the user).
+        // follows (the requirement: suggest, don't decide for the user).
         function applyOcrEngineAdvice() {
             // setOcrEngine() is normally driven by the <select>'s onchange,
             // where the DOM value has already moved before the handler

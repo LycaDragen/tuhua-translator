@@ -113,8 +113,8 @@ check('fuzzy-match-respects-engineClass-llm-does-not-reuse-mt', () => {
   return { pass: result === null, actual: result };
 });
 
-// ─── variant compatibility (Fase 9 testing follow-up — real bug found by
-// Lyca: switching prompt presets on an already-seen line kept returning
+// ─── variant compatibility (Fase 9 testing follow-up — real bug found in real testing:
+// switching prompt presets on an already-seen line kept returning
 // the OLD preset's translation, because TM never knew the prompt changed) ─
 check('a-different-prompt-variant-is-a-tm-miss-for-the-same-line', () => {
   const tm = freshTM();
@@ -130,7 +130,7 @@ check('a-different-prompt-variant-is-a-tm-miss-for-the-same-line', () => {
 // v3.13.6x (Fase 9 testing follow-up, ronda 6): the leniency this check
 // used to pin ("missing-variant-on-either-side-never-blocks-a-match") was
 // found, by real testing across 3 sessions, to be the ACTUAL reason
-// prompt-preset comparisons looked broken during normal play — Lyca had
+// prompt-preset comparisons looked broken during normal play — a real install had
 // 571 real TM entries written before `variant` existed, and every one of
 // them answered EVERY preset for the rest of its 30-day TTL. It's replaced
 // below with the tightened rule: a blank-variant entry an LLM engine

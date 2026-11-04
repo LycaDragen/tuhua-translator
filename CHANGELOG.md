@@ -35,8 +35,12 @@
 - **Documentos técnicos en inglés** (`docs/en/llm-prompting.md` y `docs/en/translation-context-support.md`), con
   enlace cruzado a los originales en español. Al traducirlos se corrigió el original: decía que el motor Bing
   estaba roto (se arregló en v3.13.102 y funciona) y remitía a una «memoria del proyecto» privada.
-- Los scripts de prueba usaban una ruta de Windows con un nombre de usuario real; ahora es genérica.
-- Banco nuevo `scripts/test-license-wording.js` (4 casos): falla si «open source» vuelve al subtítulo, a
+- **Comentarios, tests y CHANGELOG sin nombres:** ~150 comentarios del código narraban quién pidió o encontró
+  cada cosa; ahora describen sólo el hecho (qué pasaba y qué se hizo). El contacto público de `README`,
+  `LICENSE` y `package.json` es `help@tuhua.lyca.dev`, y los fixtures de prueba ya no llevan una ruta de
+  Windows con un usuario real.
+- Bancos nuevos `scripts/test-public-hygiene.js` (4 casos: falla si vuelven nombres de personas, el correo
+  personal o una ruta con usuario real) y `scripts/test-license-wording.js` (4 casos): falla si «open source» vuelve al subtítulo, a
   `package.json` o al arranque del README.
 - **README en inglés.** `README.md` pasa a ser la versión en inglés y el español se mueve a `README.es.md`
   (cada uno enlaza al otro arriba). Además: nota de que macOS está sin probar, y la licencia explicada como
@@ -80,7 +84,7 @@
 ### Arreglado
 
 - **En Linux con una sesión Wayland (KDE Plasma, GNOME…), el OCR abría el diálogo «compartir pantalla» en
-  cada captura.** Lo reportó un usuario en CachyOS. La causa, verificada ejecutando Electron 28: bajo
+  cada captura.** La causa, verificada ejecutando Electron 28: bajo
   Wayland, Chromium captura la pantalla por el portal del sistema (xdg-desktop-portal, PipeWire) y cada
   llamada a `desktopCapturer.getSources()` abre una sesión nueva del portal; con tres llamadas seguidas
   hubo tres contactos al portal. El OCR automático captura cada 3,5 s, de ahí un diálogo por captura (y
@@ -263,7 +267,7 @@ Continuación de la v1.0.9, que arregló la compuerta equivocada. Esto es lo que
 
 ### Arreglado
 
-- **Con OCR, el texto que se revela de a poco no se traducía una vez completo.** Reportado como
+- **Con OCR, el texto que se revela de a poco no se traducía una vez completo.** Síntoma:
   "a veces no detecta el cambio de texto", con Tesseract y con PaddleOCR. No es que no lo leyera:
   lo leía y lo descartaba por parecido al anterior. El filtro que evita retraducir la misma línea
   medía, entre otras cosas, cuánto del texto más corto coincide con el principio del más largo —
@@ -292,9 +296,8 @@ Continuación de la v1.0.9, que arregló la compuerta equivocada. Esto es lo que
 
 ## [1.0.7] — el log ya no puede filtrar tu API key
 
-Un usuario mandó su log para diagnosticar otra cosa y adentro venía su clave de API, copiada al
-portapapeles un rato antes. No hizo nada mal: el flujo que Tuhua recomienda para reportar un
-problema era, tal como estaba, un flujo que filtraba credenciales.
+Un log de diagnóstico contenía una clave de API, copiada al portapapeles un rato antes. El flujo que
+Tuhua recomienda para reportar un problema era, tal como estaba, un flujo que filtraba credenciales.
 
 ### Arreglado
 
@@ -336,8 +339,8 @@ problema era, tal como estaba, un flujo que filtraba credenciales.
 
 ## [1.0.6] — cinco cosas que un archivo de log dejó a la vista
 
-Ronda nacida de leer una sesión real de traducción de punta a punta. Ninguno de estos cinco
-problemas había sido reportado por separado: todos estaban en el mismo log.
+Ronda nacida de leer una sesión real de traducción de punta a punta: los cinco problemas estaban en
+el mismo log.
 
 ### Arreglado
 

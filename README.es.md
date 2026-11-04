@@ -301,7 +301,7 @@ Para más detalles, consulta el archivo [LICENSE](LICENSE) o visita [creativecom
 
 ## 👤 Autor
 
-**Lyca** — [sebaguerra6@gmail.com](mailto:sebaguerra6@gmail.com)
+**Lyca** — [help@tuhua.lyca.dev](mailto:help@tuhua.lyca.dev)
 
 Si te gusta este proyecto, considera dejar una ⭐ en GitHub. Tuhua es gratis; si querés apoyarlo, hay un icono de café discreto en la barra superior de la app (o directo en [ko-fi.com/lycadragen](https://ko-fi.com/lycadragen)) — es totalmente opcional.
 
@@ -311,7 +311,7 @@ Si te gusta este proyecto, considera dejar una ⭐ en GitHub. Tuhua es gratis; s
 
 ### Especiales
 
-- **ZpectralKrystal** — por el apoyo incondicional, por estar siempre ahí y por motivarme a crecer y ser mejor en todo este proceso.
+- **Zpec** — por el apoyo incondicional, por estar siempre ahí y por motivarme a crecer y ser mejor en todo este proceso.
 - **Dust** — por regalarme la clave de Claude Pro que hizo posible llevar este proyecto hasta donde siempre quise que llegara.
 
 ### Tecnologías y proyectos open source

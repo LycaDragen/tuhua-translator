@@ -10,7 +10,7 @@
  *   - Ctrl+Shift+R: registrado desde su primer commit, sin rama en
  *     handleShortcut(). Nunca funcionó hasta que se detectó en la Fase 9
  *     (v3.13.6x); hay un comentario en renderer.js contándolo.
- *   - Ctrl+Shift+O: exactamente lo mismo, encontrado por Lyca probando los
+ *   - Ctrl+Shift+O: exactamente lo mismo, encontrado probando los
  *     atajos que habíamos documentado (v1.0.2).
  *
  * Que pase dos veces no es mala suerte: nada ata las dos listas. El main
@@ -105,7 +105,7 @@ check('ui-shortcut-labels-are-translatable', () => {
   const rows = [...grid[0].matchAll(/<span([^>]*)>([^<]+)<\/span>\s*<kbd/g)];
   const untranslated = rows.filter(([, attrs]) => !attrs.includes('data-i18n')).map(([, , label]) => label.trim());
   return { pass: untranslated.length === 0, actual: untranslated };
-}, 'Las 4 etiquetas originales estaban hardcodeadas en inglés y no seguían el idioma de la interfaz — reportado por Lyca.');
+}, 'Las 4 etiquetas originales estaban hardcodeadas en inglés y no seguían el idioma de la interfaz — reportado.');
 
 check('exempt-shortcuts-are-actually-registered', () => {
   const stale = [...UI_EXEMPT.keys()].filter((k) => !registered.includes(k));

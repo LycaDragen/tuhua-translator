@@ -64,7 +64,7 @@ const FRAME_CHANGE_FORCE_AFTER = 8;
 // más de dos ciclos, así que sólo se activa ante algo genuinamente trabado.
 const CAPTURE_TIMEOUT_MS = 8000;
 
-// v3.13.8x (settings UX audit, Fase 4, second pass): Lyca reported the
+// v3.13.8x (settings UX audit, Fase 4, second pass): It was reported that the
 // game process picker felt slow to open — real cost, not perception: a
 // PowerShell cold-start (~1-2s) plus a per-process app.getFileIcon() disk
 // read for however many windowed apps are open. The PowerShell call is
@@ -297,7 +297,7 @@ class IpcHandlers {
         // La traducción en sí seguía andando de casualidad: pipeline.js llama
         // a resolveLocalEndpoint(), que resuelve el baseUrl del lado del main
         // contra LOCAL_ENDPOINT_PRESETS y nunca miró el valor del input.
-        // Reportado por Lyca con Ollama; afectaba a los 4 presets por igual.
+        // Reportado con Ollama; afectaba a los 4 presets por igual.
         localPresets: llmProviders.LOCAL_ENDPOINT_PRESETS.map((p) => ({ id: p.id, labelKey: p.labelKey, baseUrl: p.baseUrl }))
       };
     });
@@ -577,7 +577,7 @@ class IpcHandlers {
       // on-screen" cuando la pausa ya había ocultado Y VACIADO el overlay
       // (ver el bloque de la pausa en _handleText). O sea: una llamada al
       // motor de traducción, estando pausado, cuyo resultado nadie puede
-      // ver. Encontrado por Lyca probando el arreglo de v1.0.7 en Windows:
+      // ver. Encontrado probando el arreglo de v1.0.7 en Windows:
       // ese arreglo evitó que se RECORDARA texto llegado en pausa, pero no
       // que se retradujera el ya recordado. Misma regla, otra puerta:
       // pausado no habla con la red.
@@ -730,13 +730,13 @@ class IpcHandlers {
 
     // v3.13.8x (settings UX audit, Fase 4): replaces "open Task Manager and
     // type the PID by hand" — the worst control in the settings panel per
-    // Lyca's own words. Windows-only, same guard class as every other
+    // the original feedback. Windows-only, same guard class as every other
     // Textractor path in this file (see _resolveExePathFromPid() in
     // textractor-launcher.js for the sibling pattern this borrows: async
     // exec + PowerShell, never execSync, so a slow PowerShell cold-start
     // can't block the main process's event loop).
     //
-    // `MainWindowTitle -ne ''` is the actual noise filter Lyca asked for —
+    // `MainWindowTitle -ne ''` is the actual noise filter —
     // it's exactly what separates "an app with a window a user would
     // recognize" from Windows' many background services/helpers, without
     // a hand-maintained denylist. `-and $_.Path` additionally drops
@@ -1095,7 +1095,7 @@ class IpcHandlers {
 
     // v3.13.40-fix: glossary/history import-export used to prompt the user
     // to TYPE a full file path (via showTextPrompt) — real feedback found
-    // this genuinely unclear (Lyca first read it as "type a filename",
+    // this genuinely unclear (it was first read as "type a filename",
     // not "type a full path", and even once understood, typing a path by
     // hand instead of picking one is a worse experience than every other
     // file-choosing flow in this app already has — see
@@ -1298,7 +1298,7 @@ class IpcHandlers {
     // v3.13.51: `word` can be an empty string now — the overlay's new
     // toolbar button (📖+, next to the OUTPUT label) opens this SAME
     // flow without any specific word attached, for exactly the reason
-    // Lyca raised: right-clicking one word implied to the user that THAT
+    // raised in testing: right-clicking one word implied to the user that THAT
     // word would be the one saved, which stopped being true once the
     // Término field became independently editable (v3.13.47) — a
     // generic entry point removes the false expectation. Right-click on
@@ -1309,13 +1309,13 @@ class IpcHandlers {
       const active = this.profileStore.getActive();
       // v3.13.46: whether the ORIGINAL line can be split into clickable
       // words for the prompt (see createWordSavePrompt) — real fix for
-      // the backwards flow Lyca flagged: this used to save the CLICKED
+      // the backwards flow flagged in testing: this used to save the CLICKED
       // (translated) word as the glossary entry's `source`, when a
       // source→target glossary needs the actual source-language term.
       // Whitespace segmentation only means something for word-delimited
       // scripts — CJK (Hiragana/Katakana/Han/Hangul) has none, so those
       // stay a plain typed field instead of a false-precision word list
-      // (Lyca's own call: fine for this to just not work for CJK rather
+      // (a deliberate call: fine for this to just not work for CJK rather
       // than guess wrong).
       const cleanOriginal = typeof originalText === 'string' ? originalText.trim() : '';
       // Same Hiragana/Katakana/Han/Hangul ranges as translatableCharCount
@@ -2336,7 +2336,7 @@ class IpcHandlers {
       // real source term from (see overlay-word-context-menu below),
       // instead of the previous behavior of saving the CLICKED
       // (translated) word as the glossary entry's `source` — backwards
-      // for a source→target glossary, and the exact bug Lyca flagged.
+      // for a source→target glossary, and the exact bug flagged in testing.
       this.windowManager.sendToOutputOverlay('update-output', { text: translation, originalText: text, targetLang: tgtLang });
     } catch (err) {
       // v3.13.55: a SUPERSEDED error means the debounce in pipeline.translate()
@@ -2358,7 +2358,7 @@ class IpcHandlers {
   /**
    * v3.13.6x (Fase 9 testing follow-up): re-translate whatever line is
    * CURRENTLY shown, using CURRENT settings — the overlay's new "↻" toolbar
-   * button, next to 📖+. Real bug found by Lyca: Ctrl+Shift+R has fired
+   * button, next to 📖+. Real bug found in real testing: Ctrl+Shift+R has fired
    * `shortcut-pressed{action:'retranslate'}` since it was added, but
    * handleShortcut() in renderer.js only ever handled
    * 'toggle-clickthrough' — 'retranslate' silently did nothing, ever. This
@@ -2371,7 +2371,7 @@ class IpcHandlers {
    * branching — unlike OCR's separate "📸 Capturar ahora" button (that one
    * re-reads the SCREEN; this one re-reads the last text Tuhua already
    * received, which is the only thing Textractor/Clipboard even have).
-   * v3.13.6x correction (Lyca, same day): does NOT apply to XUAT — XUAT
+   * v3.13.6x correction (same day): does NOT apply to XUAT — XUAT
    * replaces text directly inside the game via XUnity.AutoTranslator, it
    * has no output overlay at all, and its text never reaches
    * _handleText() in the first place (xuat-server.js calls
@@ -2517,7 +2517,7 @@ class IpcHandlers {
       }
 
       // v3.13.114: FIX for a real regression from v3.13.112 (Ronda 4d) —
-      // confirmed by Lyca on real Windows (garbled/empty OCR, a Tesseract
+      // confirmed on real Windows (garbled/empty OCR, a Tesseract
       // crash reading a malformed capture, PaddleOCR detecting a degenerate
       // 32x32 input). Root cause, straight from Electron's own docs
       // (electron.d.ts, DesktopCapturerSource#thumbnail): "There is no
@@ -2526,7 +2526,7 @@ class IpcHandlers {
       // or window." v3.13.112 removed the resize() call assuming
       // `thumbnail` already came back at exactly screenWidth*scaleFactor ×
       // screenHeight*scaleFactor — true on the single-display WSLg setup
-      // this was verified against, false on Lyca's real Windows machine,
+      // this was verified against, false on a real Windows machine,
       // where the crop rectangle (computed from the WRONG assumed size)
       // landed outside/misaligned with the real thumbnail.
       //
@@ -2537,7 +2537,7 @@ class IpcHandlers {
       // testing. Also tightened here: the old inline version only clamped
       // width/height, which could still go negative if cropX/cropY
       // themselves landed past the thumbnail's real bounds (an even more
-      // extreme mismatch than what broke Lyca's session); the extracted
+      // extreme mismatch than what broke the session); the extracted
       // version clamps x/y first, then width/height off the clamped
       // origin, so width/height can never be negative.
       const thumbSize = thumbnail.getSize();
@@ -2729,7 +2729,7 @@ class IpcHandlers {
    * worker not initialized. Call initialize() first." (Tesseract's
    * recognize() checks `this._worker`, never created if the session
    * started on Paddle) until something else happened to call
-   * initialize() again — reproduced live by Lyca switching
+   * initialize() again — reproduced live switching
    * paddle→tesseract mid-session (session90.log). _startOcrCapture()
    * (below) already pairs setOcrEngine()+initialize() for the INITIAL
    * start; this does the same for a LIVE switch. initialize() is
@@ -2763,7 +2763,7 @@ class IpcHandlers {
    * input method to OCR while Tuhua is already active (save-settings'
    * input-method-switch block) — which used to just leave the capture
    * area window uncreated until the user manually paused/resumed,
-   * exactly Lyca's report ("cambio a OCR estando activo y no aparece
+   * exactly the report ("cambio a OCR estando activo y no aparece
    * el overlay de input").
    *
    * Also where the "capture area always starts paused" fix lives: this

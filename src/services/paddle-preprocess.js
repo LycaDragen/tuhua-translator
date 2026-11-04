@@ -28,7 +28,7 @@
  * the bench: every existing CJK image has maxSide >= 1152, so
  * minSideLen=960 is a no-op for all of them — this only engages on captures
  * smaller than the bench has ever exercised, which is exactly the untested
- * gap Lyca's real-world testing found (lat06, a 12px-text bench image,
+ * gap real-world testing found (lat06, a 12px-text bench image,
  * started returning empty output post-Stage-2 because the corrected,
  * no-longer-inflated geometric filters correctly measure it as too small —
  * upscaling before detection is the intended fix, not loosening those

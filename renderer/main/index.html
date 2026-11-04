@@ -245,7 +245,7 @@
 
         <!-- SIDEBAR -->
         <!-- v3.13.93: grows with the window instead of the play-button
-             column (Lyca's call — Configuración has real, scrollable
+             column (a deliberate call — Configuración has real, scrollable
              content that benefits from extra width; the play button/status
              bar/shortcuts card next door are all capped at max-w-lg already
              and just centered when given more room than that, so giving
@@ -311,7 +311,7 @@
                                  v3.13.86: used to be two buttons here (this
                                  picker + a separate "🔍 Buscar juego" that
                                  called scanForKnownGames(true)). Merged into
-                                 one on Lyca's call after testing: the scan
+                                 one after testing: the scan
                                  button was structurally a dead end on any
                                  profile without a game linked yet (it only
                                  re-verifies an EXISTING profile.game.exePath,
@@ -322,7 +322,7 @@
                                  re-verification job on their own — this
                                  button only ever needs to open the picker
                                  now. Keeps the "Buscar juego" label/icon
-                                 (that's the wording Lyca wants users to see)
+                                 (that's the wording the agreed wording for users)
                                  wired to openGameProcessPicker() instead. -->
                             <button type="button" onclick="openGameProcessPicker()" class="text-[10px] text-emerald-500 hover:text-emerald-400 font-medium flex items-center gap-1" data-i18n="game_scan_btn">
                                 🔍 Buscar juego
@@ -459,7 +459,7 @@
                          moves faster than Tuhua releases), populated per-provider by
                          onLlmProviderChange(). Empty = use the provider's own default.
                          v3.13.6x (Fase 9 testing follow-up): the original used a native
-                         &lt;input list&gt;+&lt;datalist&gt; — found by Lyca to be
+                         &lt;input list&gt;+&lt;datalist&gt; — found to be
                          unfixably wrong in dark mode: Chromium's native suggestions
                          popup and its "has a list" combobox chrome on the input itself
                          BOTH ignore authored CSS (this is a well-documented Chromium
@@ -526,7 +526,7 @@
                     <input type="text" id="local-endpoint" class="w-full p-2 rounded-md bg-gray-50 dark:bg-dark-900 border border-gray-300 dark:border-dark-600 text-xs font-mono transition-colors duration-200" placeholder="http://localhost:11434/v1" oninput="markUnsaved('sidebar')">
                     <!-- v1.0.4: sin esto, el campo bloqueado y en gris se lee
                          como "no puedo escribir acá" en vez de "esto ya está
-                         resuelto" — Lyca lo reportó exactamente así. El texto
+                         resuelto" — Se reportó exactamente así. El texto
                          lo pinta renderLocalEndpointHint(). -->
                     <p id="local-endpoint-hint" class="hidden text-[10px] text-gray-400 -mt-1"></p>
                     <input type="text" id="local-model" class="w-full p-2 rounded-md bg-gray-50 dark:bg-dark-900 border border-gray-300 dark:border-dark-600 text-xs font-mono" data-i18n-placeholder="local_model_placeholder" placeholder="Model name (e.g. llama3)" oninput="markUnsaved('sidebar')">
@@ -793,7 +793,7 @@
                              _resolveExePathFromPid()'s doc comment gives).
                              v3.13.8x, second pass: was an inline
                              disclosure-list like #llm-model-suggestions —
-                             Lyca reported it felt slow to open, shifted the
+                             It was reported that it felt slow to open, shifted the
                              layout (so the mouse ended up somewhere else),
                              and had no obvious way to close besides the
                              same button. Rebuilt as a floating overlay
@@ -814,8 +814,8 @@
                         </div>
                         <p id="game-pid-selected-name" class="hidden text-xs text-emerald-600 dark:text-emerald-400 mt-1 truncate"></p>
                         <!-- v3.13.8x, second pass: "PID changed while
-                             Textractor is already attached" real gap Lyca
-                             hit — gamePid deliberately isn't a saved Tier B
+                             Textractor is already attached" real gap hit
+                             in testing — gamePid deliberately isn't a saved Tier B
                              setting (see gatherConfig()'s comment), so the
                              Save button never lit up for it even before
                              this, and maybeAutoLaunchTextractor() no-ops
@@ -1048,7 +1048,7 @@
                         </div>
                     </div>
                     <!-- v1.0.8: `flex-wrap` + `min-w-0` en las dos mitades.
-                         Reportado por Lyca en Windows: al angostar la columna
+                         Reportado en Windows: al angostar la columna
                          derecha (el drag del sidebar), los botones se salían
                          del recuadro en vez de reacomodarse — una fila flex
                          sin wrap no encoge más allá del contenido mínimo de
@@ -1096,7 +1096,7 @@
 
                 <!-- Keyboard Shortcuts Reference -->
                 <!-- v3.13.95: 2 columns at main's normal width, collapsing
-                     to 1 (Lyca's mockup) only once the sidebar drag has
+                     to 1 (the agreed mockup) only once the sidebar drag has
                      squeezed main down near its floor — see the
                      @container rule in the <style> block up top, keyed off
                      <main>'s own inline-size. grid-template-columns lives
@@ -1140,7 +1140,7 @@
                 <h3 class="text-lg font-bold" data-i18n="setup_guide">Guía de Inicio</h3>
                 <button onclick="toggleGuide(false)" class="hover:bg-emerald-700 p-1 rounded transition text-lg">&times;</button>
             </div>
-            <!-- v3.13.90 (Fase E follow-up, pedido de Lyca): un método de
+            <!-- v3.13.90 (Fase E follow-up, pedido explícito): un método de
                  entrada por pestaña — la guía anterior sólo explicaba
                  Textractor, pero Tuhua tiene 4 métodos con procesos
                  completamente distintos entre sí. -->
@@ -1150,7 +1150,7 @@
                 <button onclick="switchGuideTab('ocr')" id="guide-tab-btn-ocr" class="guide-tab-btn flex-1 py-2.5 text-[11px] font-medium border-b-2 transition" data-i18n="guide_tab_ocr">📸 OCR</button>
                 <button onclick="switchGuideTab('xuat')" id="guide-tab-btn-xuat" class="guide-tab-btn flex-1 py-2.5 text-[11px] font-medium border-b-2 transition" data-i18n="guide_tab_xuat">🎮 XUAT</button>
             </div>
-            <!-- v3.13.101 (Lyca's ask): h-[65vh], not max-h — a FIXED
+            <!-- v3.13.101 (requested): h-[65vh], not max-h — a FIXED
                  height so the popup doesn't resize as you switch tabs.
                  Measured live (WSL/CDP) that Textractor (5 steps) is the
                  tallest panel at 564px; 65vh comfortably clears that on
@@ -1223,7 +1223,7 @@
                 <span class="text-[10px] font-medium text-emerald-700 dark:text-emerald-400" data-i18n="settings_global_note">Estos ajustes son globales y no se ven afectados por los perfiles</span>
             </div>
             <!-- Content -->
-            <!-- v3.13.101 (Lyca's ask): h-[calc(85vh-175px)], not auto-sized
+            <!-- v3.13.101 (requested): h-[calc(85vh-175px)], not auto-sized
                  — a FIXED height so the popup doesn't resize per tab.
                  175px = header (65px) + global-settings banner (47px) +
                  footer (61px, measured live via CDP), the fixed chrome
@@ -1238,7 +1238,7 @@
                  their own shorter content. -->
             <div class="h-[calc(85vh-175px)] overflow-y-auto scrollbar-thin p-6 space-y-2">
                 <!-- v3.13.100 (settings tabs): categories used to be a
-                     collapsible accordion — replaced with tabs (Lyca's
+                     collapsible accordion — replaced with tabs (a deliberate
                      call: no real benefit to having two categories open at
                      once when neither fits on screen without scrolling
                      anyway). switchSettingsTab() (renderer.js) shows one

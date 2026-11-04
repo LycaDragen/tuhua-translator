@@ -269,7 +269,7 @@ function seedDeeplCustomInstructions(profiles, globalCustomInstructions) {
  * full rationale — this is the same problem, for `deeplFormality` instead
  * of the instructions array). Seeds every profile's new `deeplFormality`
  * from the CURRENT global `deeplFormality`, so promoting it to
- * profile-scoped (Lyca's explicit request, same session as the
+ * profile-scoped (an explicit request, same session as the
  * instructions scoping) doesn't silently reset an already-tuned register
  * back to a blank default the next time a profile loads.
  *

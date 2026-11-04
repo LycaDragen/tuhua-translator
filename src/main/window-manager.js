@@ -545,7 +545,7 @@ class WindowManager {
     // here, not left to the renderer, since this window doesn't
     // auto-resize the way the output overlay does.
     const height = sourceClickable ? 320 : 270;
-    // v3.13.54: real gap Lyca caught — mainWindow/outputOverlay/
+    // v3.13.54: real gap caught — mainWindow/outputOverlay/
     // captureArea all remember where the user last dragged them
     // (store 'moved' → *Bounds, restored on next createX()); this
     // window never did, always resetting to "centered under the

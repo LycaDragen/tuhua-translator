@@ -428,7 +428,7 @@ class RegexFilterService {
     if (filter.isRegex) {
       // Regex mode — v3.13.111 (Ronda 4e): compiled+cached instead of a
       // fresh `new RegExp()` per line per filter (was the 2nd-costliest
-      // hot-path finding after the store reads, per Lyca's approval order).
+      // hot-path finding after the store reads, per the agreed order).
       const flags = filter.isCaseSensitive ? 'g' : 'gi';
       const regex = getCompiledRegex(filter.pattern, flags);
       return text.replace(regex, replacement);

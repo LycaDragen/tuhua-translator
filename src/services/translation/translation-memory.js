@@ -52,7 +52,7 @@ function resolveEntryClass(entry) {
 }
 
 // v3.13.6x (LLM engine overhaul, Fase 9 testing follow-up): found by real
-// testing (Lyca, Nekopara Vol.1) — reloading a save and comparing prompt
+// testing (Nekopara Vol.1) — reloading a save and comparing prompt
 // presets (Balanceado/Literal/Localizado) on the SAME line showed no
 // difference, because TM had no idea the prompt had changed at all. This
 // is the exact same 5th key component cache.js's 24h cache already gates

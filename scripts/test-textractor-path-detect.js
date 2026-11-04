@@ -43,19 +43,19 @@ function fakeFs(tree) {
 // ─── buildCandidates: pure, no fs ───────────────────────────────────────
 check('build-candidates-with-all-bases-returns-seven-in-search-order', () => {
   const c = buildCandidates({
-    homedir: 'C:\\Users\\lyca',
-    localAppData: 'C:\\Users\\lyca\\AppData\\Local',
+    homedir: 'C:\\Users\\Player',
+    localAppData: 'C:\\Users\\Player\\AppData\\Local',
     programFiles: 'C:\\Program Files',
     programFilesX86: 'C:\\Program Files (x86)',
     tuhuaDir: 'C:\\Tuhua'
   });
   const pass = c.length === 7
-    && c[0].type === 'glob' && c[0].dir === path.join('C:\\Users\\lyca', 'Downloads')
-    && c[1].type === 'glob' && c[1].dir === path.join('C:\\Users\\lyca', 'Desktop')
+    && c[0].type === 'glob' && c[0].dir === path.join('C:\\Users\\Player', 'Downloads')
+    && c[1].type === 'glob' && c[1].dir === path.join('C:\\Users\\Player', 'Desktop')
     && c[2].type === 'exact' && c[2].dir === 'C:\\Textractor'
     && c[3].dir === path.join('C:\\Program Files', 'Textractor')
     && c[4].dir === path.join('C:\\Program Files (x86)', 'Textractor')
-    && c[5].dir === path.join('C:\\Users\\lyca\\AppData\\Local', 'Programs', 'Textractor')
+    && c[5].dir === path.join('C:\\Users\\Player\\AppData\\Local', 'Programs', 'Textractor')
     && c[6].dir === path.join('C:\\Tuhua', 'Textractor');
   return { pass, actual: c };
 }, 'Downloads/Desktop first (the two most common real-world cases per the plan), C:\\Textractor next (what the manual field\'s own placeholder suggests), then the rest.');
@@ -85,21 +85,21 @@ check('exact-candidate-that-does-not-exist-is-dropped', () => {
 
 check('glob-candidate-matches-case-insensitive-prefix-and-ignores-others', () => {
   const fs = fakeFs({
-    'C:\\Users\\lyca\\Downloads': ['Textractor-5.4.0', 'TEXTRACTOR_master', 'my-textractor-fork', 'RandomGame', 'textra']
+    'C:\\Users\\Player\\Downloads': ['Textractor-5.4.0', 'TEXTRACTOR_master', 'my-textractor-fork', 'RandomGame', 'textra']
   });
-  const dirs = resolveCandidateDirs([{ type: 'glob', dir: 'C:\\Users\\lyca\\Downloads', prefix: 'textractor' }], fs);
+  const dirs = resolveCandidateDirs([{ type: 'glob', dir: 'C:\\Users\\Player\\Downloads', prefix: 'textractor' }], fs);
   // "my-textractor-fork" doesn't START with the prefix — real GitHub
   // release folders always do, and this avoids matching an unrelated
   // "some-other-textractor-based-tool" someone also has in Downloads.
   const pass = dirs.length === 2
-    && dirs.includes(path.join('C:\\Users\\lyca\\Downloads', 'Textractor-5.4.0'))
-    && dirs.includes(path.join('C:\\Users\\lyca\\Downloads', 'TEXTRACTOR_master'));
+    && dirs.includes(path.join('C:\\Users\\Player\\Downloads', 'Textractor-5.4.0'))
+    && dirs.includes(path.join('C:\\Users\\Player\\Downloads', 'TEXTRACTOR_master'));
   return { pass, actual: dirs };
 });
 
 check('glob-candidate-whose-parent-directory-does-not-exist-yields-nothing', () => {
   const fs = fakeFs({});
-  const dirs = resolveCandidateDirs([{ type: 'glob', dir: 'C:\\Users\\lyca\\Downloads', prefix: 'textractor' }], fs);
+  const dirs = resolveCandidateDirs([{ type: 'glob', dir: 'C:\\Users\\Player\\Downloads', prefix: 'textractor' }], fs);
   return { pass: dirs.length === 0, actual: dirs };
 }, 'A user with no Downloads folder indexed (unusual, but possible on a locked-down profile) degrades to "no match here," not a crash.');
 
@@ -114,14 +114,14 @@ check('readdir-throwing-mid-scan-is-swallowed-not-propagated', () => {
 
 check('resolveCandidateDirs-preserves-candidate-order-across-mixed-types', () => {
   const fs = fakeFs({
-    'C:\\Users\\lyca\\Downloads': ['Textractor'],
+    'C:\\Users\\Player\\Downloads': ['Textractor'],
     'C:\\Textractor': []
   });
   const dirs = resolveCandidateDirs([
-    { type: 'glob', dir: 'C:\\Users\\lyca\\Downloads', prefix: 'textractor' },
+    { type: 'glob', dir: 'C:\\Users\\Player\\Downloads', prefix: 'textractor' },
     { type: 'exact', dir: 'C:\\Textractor' }
   ], fs);
-  return { pass: dirs.length === 2 && dirs[0] === path.join('C:\\Users\\lyca\\Downloads', 'Textractor') && dirs[1] === 'C:\\Textractor', actual: dirs };
+  return { pass: dirs.length === 2 && dirs[0] === path.join('C:\\Users\\Player\\Downloads', 'Textractor') && dirs[1] === 'C:\\Textractor', actual: dirs };
 });
 
 // ─── findTextractorInstall: injected validatePath, first-match-wins ────
@@ -168,10 +168,10 @@ check('validatePath-throwing-on-one-candidate-does-not-abort-the-search', () => 
 
 // ─── autoDetectTextractorPath: the full wrapper ─────────────────────────
 check('autoDetectTextractorPath-wires-build-plus-resolve-plus-find-together', () => {
-  const fs = fakeFs({ 'C:\\Users\\lyca\\Downloads': ['Textractor-5.4.0'] });
+  const fs = fakeFs({ 'C:\\Users\\Player\\Downloads': ['Textractor-5.4.0'] });
   const validate = (dir) => ({ valid: true, resolved: path.join(dir, 'x64', 'TextractorCLI.exe') });
-  const r = autoDetectTextractorPath({ homedir: 'C:\\Users\\lyca' }, validate, fs);
-  return { pass: r.found === true && r.path === path.join('C:\\Users\\lyca\\Downloads', 'Textractor-5.4.0', 'x64', 'TextractorCLI.exe'), actual: r };
+  const r = autoDetectTextractorPath({ homedir: 'C:\\Users\\Player' }, validate, fs);
+  return { pass: r.found === true && r.path === path.join('C:\\Users\\Player\\Downloads', 'Textractor-5.4.0', 'x64', 'TextractorCLI.exe'), actual: r };
 });
 
 // ─── computeBases: real env, shape-only checks ──────────────────────────

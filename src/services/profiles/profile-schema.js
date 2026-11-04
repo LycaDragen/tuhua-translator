@@ -106,7 +106,7 @@ const PROFILE_SCOPED_SETTING_KEYS = [
   // 2026-08-22) that custom_instructions is actually honored — DeepL's own
   // docs claim it's Pro-only, which is wrong, at least for this account.
   'deeplCustomInstructions',
-  // v3.13.80: added on Lyca's explicit request, reversing the "stays
+  // v3.13.80: added on an explicit request, reversing the "stays
   // global" call made earlier the same session — a VN's register (formal
   // "usted" vs informal "tú") is exactly as game-specific as its glossary
   // or custom instructions (a period piece vs. casual dialogue among
@@ -193,7 +193,7 @@ function createProfile(overrides = {}) {
     // v3.13.80: '' means "no per-game override yet" — same semantics as
     // deeplCustomInstructions above. deepl.js's setFormality() treats a
     // falsy value as DeepL's own neutral 'default' (changed from
-    // 'prefer_more' the same day, on Lyca's explicit request — silently
+    // 'prefer_more' the same day, on an explicit request — silently
     // defaulting every new profile to formal/usted was wrong for casual VN
     // dialogue between characters, not just an arbitrary starting point).
     deeplFormality: overrides.deeplFormality || '',

@@ -1,7 +1,7 @@
 /**
  * LLM provider table — LLM engine overhaul, Fase 3.
  *
- * Lyca asked for a dropdown of cloud LLM providers next to the API key
+ * Requirement: a dropdown of cloud LLM providers next to the API key
  * field (today only OpenAI's own API is reachable). Every provider below
  * speaks the same `/chat/completions` shape OpenAI does — none of them
  * need a real adapter, which is why this is a data table and not seven new

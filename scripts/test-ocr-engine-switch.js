@@ -13,7 +13,7 @@
  * while OCR was already running only flipped OcrService's internal flag —
  * it never (re)initialized the worker/session for the newly selected
  * engine. The next capture threw "OCR worker not initialized. Call
- * initialize() first." Reproduced live: Lyca ran PaddleOCR successfully,
+ * initialize() first." Reproduced live: running PaddleOCR successfully,
  * switched to Tesseract, and every subsequent capture failed until the
  * app was restarted.
  *

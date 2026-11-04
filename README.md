@@ -301,7 +301,7 @@ The source code is public, but because of the NonCommercial term this is a *sour
 
 ## 👤 Author
 
-**Lyca** — [sebaguerra6@gmail.com](mailto:sebaguerra6@gmail.com)
+**Lyca** — [help@tuhua.lyca.dev](mailto:help@tuhua.lyca.dev)
 
 If you like this project, consider leaving a ⭐ on GitHub. Tuhua is free; if you'd like to support it, there's a discreet coffee icon in the app's top bar (or go straight to [ko-fi.com/lycadragen](https://ko-fi.com/lycadragen)) — it's entirely optional.
 
@@ -311,7 +311,7 @@ If you like this project, consider leaving a ⭐ on GitHub. Tuhua is free; if yo
 
 ### Special thanks
 
-- **ZpectralKrystal** — for the unconditional support, for always being there, and for pushing me to grow and be better throughout this whole process.
+- **Zpec** — for the unconditional support, for always being there, and for pushing me to grow and be better throughout this whole process.
 - **Dust** — for gifting me the Claude Pro key that made it possible to take this project as far as I always wanted it to go.
 
 ### Technologies and open source projects
