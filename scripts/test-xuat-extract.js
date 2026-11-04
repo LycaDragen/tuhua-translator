@@ -55,7 +55,7 @@ const HOSTILES = [
   'x‘y’z‚w‛v',
   'a & b $HOME ; c `d` %PATH%',
   "x'; New-Item PWNED -ItemType File; '",
-  'C:\\Users\\sebag\\AppData\\Local\\Temp\\tuhua-xuat-1\\BepInEx5.zip'
+  'C:\\Users\\Player\\AppData\\Local\\Temp\\tuhua-xuat-1\\BepInEx5.zip'
 ];
 
 // ─── 1. Pura ─────────────────────────────────────────────────────────────

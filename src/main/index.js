@@ -1,7 +1,7 @@
 /**
  * Tuhua Translator - Main Process Entry Point
  *
- * Open Source Visual Novel Translator
+ * Free, source-available Visual Novel Translator (CC BY-NC 4.0)
  * No paywalls, no feature gates — everything is free.
  */
 const { app, BrowserWindow, Menu } = require('electron');

@@ -5,7 +5,7 @@
 ### Arreglado
 
 - **Con una notificación en pantalla, al cambiar el idioma de la interfaz la notificación se quedaba en el
-  idioma anterior.** Reportado por Lyca (español → inglés). Las notificaciones no se cierran solas (desde
+  idioma anterior** (por ejemplo, de español a inglés). Las notificaciones no se cierran solas (desde
   v3.13.41), y su texto se armaba una sola vez al aparecer. Ahora cada una guarda *cómo* se arma y
   `changeLanguage()` la vuelve a armar en el idioma nuevo, conservando el contador «(×N)» de los repetidos.
   Lo mismo para el aviso ámbar «x64 sin resultado, probando x86…» de la barra de Textractor. Los mensajes
@@ -25,11 +25,19 @@
 - `deepl_reset_instructions + ' ✓' || 'Reset ✓'` nunca podía llegar al `||` (concatenar con `undefined` da un
   texto, no un valor falso); ahora usa el mismo mecanismo que el resto.
 
+- **Tuhua ya no se presenta como «código abierto».** La licencia es CC BY-NC 4.0 y su cláusula «no comercial»
+  la deja fuera de la definición de código abierto de la OSI; lo exacto es «código público» (*source-available*).
+  Corregido el subtítulo de la barra superior (8 idiomas), la descripción de `package.json` y el comentario de
+  cabecera de `src/main/index.js`. La licencia no cambia.
+
 ### Interno
 
 - **Documentos técnicos en inglés** (`docs/en/llm-prompting.md` y `docs/en/translation-context-support.md`), con
   enlace cruzado a los originales en español. Al traducirlos se corrigió el original: decía que el motor Bing
   estaba roto (se arregló en v3.13.102 y funciona) y remitía a una «memoria del proyecto» privada.
+- Los scripts de prueba usaban una ruta de Windows con un nombre de usuario real; ahora es genérica.
+- Banco nuevo `scripts/test-license-wording.js` (4 casos): falla si «open source» vuelve al subtítulo, a
+  `package.json` o al arranque del README.
 - **README en inglés.** `README.md` pasa a ser la versión en inglés y el español se mueve a `README.es.md`
   (cada uno enlaza al otro arriba). Además: nota de que macOS está sin probar, y la licencia explicada como
   «código público» (CC BY-NC no es una licencia de código abierto en sentido estricto).
@@ -44,14 +52,13 @@
 
 ### Arreglado
 
-- **En modo XUAT, Tuhua se abría «Activo» con el servidor ya levantado.** Lyca pidió que la app abra
-  siempre en pausa, pero no lo veía: el arranque pausado de v1.0.x dejaba a XUAT como excepción (el
-  razonamiento era que `translationActive` no afecta a XUAT, y eso era sólo a medias cierto — el ▶/⏸ del
-  panel en modo XUAT sí enciende y apaga el servidor). El log de Windows lo confirmó: días de arranques
-  con `Starting in XUAT mode` y el servidor escuchando a los 2 segundos. Ahora XUAT arranca como los
-  demás: pausado, servidor sin levantar, puerto 8419 cerrado hasta tocar ▶ Activo. Verificado con la app
-  real: arranque con `translationActive: true` guardado → PAUSADO y puerto cerrado; ▶ → ACTIVO y puerto
-  abierto; ⏸ → vuelve a cerrarse. Textractor, Portapapeles y OCR siguen igual.
+- **En modo XUAT, Tuhua se abría «Activo» con el servidor ya levantado.** La app está pensada para abrir
+  siempre en pausa, pero el arranque pausado dejaba a XUAT como excepción (el razonamiento era que
+  `translationActive` no afecta a XUAT, y eso era sólo a medias cierto: el ▶/⏸ del panel en modo XUAT sí
+  enciende y apaga el servidor). Ahora XUAT arranca como los demás: pausado, servidor sin levantar, puerto
+  8419 cerrado hasta tocar ▶ Activo. Verificado con la app real: arranque con `translationActive: true`
+  guardado → PAUSADO y puerto cerrado; ▶ → ACTIVO y puerto abierto; ⏸ → vuelve a cerrarse. Textractor,
+  Portapapeles y OCR siguen igual.
 - **Contrapartida, a propósito:** un juego con XUnity ya abierto no recibe traducción hasta que se toque
   ▶ Activo en Tuhua.
 

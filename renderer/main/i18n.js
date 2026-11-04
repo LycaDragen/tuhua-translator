@@ -4,7 +4,7 @@
  */
 const translations = {
   en: {
-    app_subtitle: "Open Source VN Translator",
+    app_subtitle: "Source-Available VN Translator",
     setup_guide: "Setup Guide",
     step1: "Download Textractor",
     step1_desc: "Get it from github.com/Artikash/Textractor and extract it anywhere on your PC.",
@@ -592,7 +592,7 @@ const translations = {
   },
 
   es: {
-    app_subtitle: "Traductor VN de Código Abierto",
+    app_subtitle: "Traductor VN de Código Público",
     setup_guide: "Guía de Inicio",
     step1: "Descargar Textractor",
     step1_desc: "Descárgalo desde github.com/Artikash/Textractor y descomprímelo en tu PC.",
@@ -1171,7 +1171,7 @@ const translations = {
   },
 
   ru: {
-    app_subtitle: "Открытый переводчик VN",
+    app_subtitle: "Переводчик ВН, код доступен",
     setup_guide: "Руководство",
     step1: "Скачайте Textractor",
     step1_desc: "Скачайте с github.com/Artikash/Textractor и распакуйте.",
@@ -1750,7 +1750,7 @@ const translations = {
   },
 
   pt: {
-    app_subtitle: "Tradutor VN de Código Aberto",
+    app_subtitle: "Tradutor de VN com Código Público",
     setup_guide: "Guia de Configuração",
     step1: "Baixe o Textractor",
     step1_desc: "Baixe em github.com/Artikash/Textractor e extraia no seu PC.",
@@ -2329,7 +2329,7 @@ const translations = {
   },
 
   it: {
-    app_subtitle: "Traduttore VN Open Source",
+    app_subtitle: "Traduttore VN, codice pubblico",
     setup_guide: "Guida all'Installazione",
     step1: "Scarica Textractor",
     step1_desc: "Scaricalo da github.com/Artikash/Textractor ed estrailo.",
@@ -2908,7 +2908,7 @@ const translations = {
   },
 
   fr: {
-    app_subtitle: "Traducteur VN Open Source",
+    app_subtitle: "Traducteur VN à code public",
     setup_guide: "Guide d'Installation",
     step1: "Téléchargez Textractor",
     step1_desc: "Téléchargez-le depuis github.com/Artikash/Textractor et extrayez-le.",
@@ -3487,7 +3487,7 @@ const translations = {
   },
 
   ja: {
-    app_subtitle: "オープンソースVN翻訳ツール",
+    app_subtitle: "ソース公開のVN翻訳ツール",
     setup_guide: "セットアップガイド",
     step1: "Textractorをダウンロード",
     step1_desc: "github.com/Artikash/Textractorからダウンロードして展開してください。",
@@ -4066,7 +4066,7 @@ const translations = {
   },
 
   zh: {
-    app_subtitle: "开源视觉小说翻译器",
+    app_subtitle: "源码公开的视觉小说翻译器",
     setup_guide: "安装指南",
     step1: "下载 Textractor",
     step1_desc: "从 github.com/Artikash/Textractor 下载并解压。",

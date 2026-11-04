@@ -2,7 +2,7 @@
   "name": "tuhua-translator",
   "version": "1.0.17",
   "productName": "Tuhua Translator",
-  "description": "Tuhua Translator - Open Source Visual Novel Translator",
+  "description": "Tuhua Translator - Free, source-available Visual Novel Translator",
   "main": "src/main/index.js",
   "scripts": {
     "start": "electron .",
@@ -70,7 +70,8 @@
     "test:linux-capture": "node scripts/test-linux-capture.js",
     "test:startup-paused-kofi": "node scripts/test-startup-paused-kofi.js",
     "test:i18n-placeholders": "node scripts/test-i18n-placeholders.js",
-    "test:capture-area-i18n": "node scripts/test-capture-area-i18n.js"
+    "test:capture-area-i18n": "node scripts/test-capture-area-i18n.js",
+    "test:license-wording": "node scripts/test-license-wording.js"
   },
   "author": {
     "name": "Lyca",
