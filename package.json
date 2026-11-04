@@ -68,7 +68,9 @@
     "test:xuat-source-lang": "node scripts/test-xuat-source-lang.js",
     "test:http-keepalive": "node scripts/test-http-keepalive.js",
     "test:linux-capture": "node scripts/test-linux-capture.js",
-    "test:startup-paused-kofi": "node scripts/test-startup-paused-kofi.js"
+    "test:startup-paused-kofi": "node scripts/test-startup-paused-kofi.js",
+    "test:i18n-placeholders": "node scripts/test-i18n-placeholders.js",
+    "test:capture-area-i18n": "node scripts/test-capture-area-i18n.js"
   },
   "author": {
     "name": "Lyca",

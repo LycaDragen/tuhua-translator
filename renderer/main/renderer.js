@@ -839,6 +839,9 @@
             // ámbar de «probando x86» de la barra del CLI son texto armado,
             // no [data-i18n]: sin esto se quedaban en el idioma anterior.
             retranslateToasts();
+            // v1.0.17: el estado del servidor XUAT («Activo (puerto …)»,
+            // «Detener») es texto armado, no [data-i18n].
+            if (typeof updateXuatStatus === 'function') updateXuatStatus();
             if (typeof cliArchFallbackNotice === 'function') {
                 const cliText = document.getElementById('cli-status-text');
                 if (cliText && cliText.querySelector('.text-amber-500.pulse-dot')) {
@@ -5774,16 +5777,16 @@
                 const statusEl = document.getElementById('xuat-server-status');
                 const btnEl = document.getElementById('xuat-toggle-btn');
                 if (status.running) {
-                    statusEl.textContent = `✓ Activo (puerto ${status.port})`;
+                    statusEl.textContent = tt('xuat_status_active', '✓ Activo (puerto {port})', { port: status.port });
                     statusEl.className = 'text-[10px] text-emerald-500 ml-2';
-                    btnEl.textContent = 'Detener';
+                    btnEl.textContent = tt('xuat_btn_stop', 'Detener');
                     btnEl.className = 'px-3 py-1.5 text-[10px] font-bold bg-red-600 hover:bg-red-500 text-white rounded-md transition';
                 } else {
                     // v3.11.3: Show error message if present, or just 'Desactivado'
                     const errorMsg = status.error || '';
-                    statusEl.textContent = errorMsg ? `✗ Error: ${errorMsg.substring(0, 50)}` : 'Desactivado';
+                    statusEl.textContent = errorMsg ? tt('xuat_status_error', '✗ Error: {error}', { error: errorMsg.substring(0, 50) }) : tt('xuat_status_off', 'Desactivado');
                     statusEl.className = errorMsg ? 'text-[10px] text-red-500 ml-2' : 'text-[10px] text-gray-400 ml-2';
-                    btnEl.textContent = 'Iniciar';
+                    btnEl.textContent = tt('xuat_btn_start', 'Iniciar');
                     btnEl.className = 'px-3 py-1.5 text-[10px] font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-md transition';
                 }
                 // v3.11.11: Show both endpoint ID and URL for clarity
@@ -5852,7 +5855,7 @@
 
                 // Show progress
                 document.getElementById('xuat-install-progress').classList.remove('hidden');
-                document.getElementById('xuat-install-status').textContent = 'Detectando juego...';
+                document.getElementById('xuat-install-status').textContent = tt('xuat_detecting', 'Detectando juego...');
                 document.getElementById('xuat-install-bar').style.width = '10%';
 
                 const port = parseInt(document.getElementById('xuat-port').value) || 8419;
@@ -5860,7 +5863,7 @@
 
                 if (installResult.success) {
                     document.getElementById('xuat-install-bar').style.width = '100%';
-                    document.getElementById('xuat-install-status').textContent = '¡Instalación completa!';
+                    document.getElementById('xuat-install-status').textContent = tt('xuat_install_done', '¡Instalación completa!');
                     // v3.11.2: Show backend type in success message
                     const backendLabel = installResult.isIL2CPP ? 'IL2CPP' : 'Mono';
                     showToast(() => tt('xuat_installed_ok', 'XUAT instalado correctamente. Inicia el juego para comenzar a traducir.'));
@@ -5869,12 +5872,12 @@
                     const countEl = document.getElementById('xuat-translation-count');
                     if (countEl) countEl.textContent = '0';
                     // Show persistent connection status
-                    updateXuatConnectedGame(installResult.gameName || 'Juego', exePath, installResult.isIL2CPP);
+                    updateXuatConnectedGame(installResult.gameName || tt('xuat_game_default', 'Juego'), exePath, installResult.isIL2CPP);
                     setTimeout(() => {
                         document.getElementById('xuat-install-progress').classList.add('hidden');
                     }, 3000);
                 } else {
-                    const rawError = installResult.error || 'Instalación fallida';
+                    const rawError = installResult.error || tt('xuat_install_failed', 'Instalación fallida');
                     // v3.13.109: EBUSY/EPERM/UNKNOWN en un copyfile casi
                     // siempre significa que Windows tiene el DLL abierto —
                     // en la práctica, el juego (o BepInEx ya cargado en él)
@@ -5885,9 +5888,9 @@
                     // para diagnóstico.
                     const looksLikeFileLock = /EBUSY|EPERM|UNKNOWN.*copyfile/i.test(rawError);
                     const friendlyError = looksLikeFileLock
-                        ? 'El juego sigue abierto — cerralo por completo e intentá de nuevo.'
+                        ? tt('xuat_game_locked', 'El juego sigue abierto — cerrálo por completo e intentá de nuevo.')
                         : rawError;
-                    document.getElementById('xuat-install-status').textContent = 'Error: ' + friendlyError;
+                    document.getElementById('xuat-install-status').textContent = tt('toast_error_generic', 'Error: {error}', { error: friendlyError });
                     document.getElementById('xuat-install-bar').style.width = '0%';
                     showToast(() => tt('xuat_install_error', 'Error al instalar XUAT: {error}', { error: friendlyError }));
                 }

@@ -13,6 +13,15 @@
 - **11 notificaciones del panel de XUAT estaban escritas en español dentro del código** (iniciar/detener el
   servidor, probarlo, copiar la URL, instalar, «no parece ser un juego Unity», limpiar la caché…): salían en
   español aunque la interfaz estuviera en inglés. Ahora son claves de traducción en los 8 idiomas.
+- **Textos que seguían en español con la interfaz en otro idioma** (descubierto al sacar capturas en inglés):
+  los placeholders de «Nombre del perfil…», la búsqueda del historial, los dos campos del glosario, la clave de
+  API, el modelo local y la fuente personalizada (eran `placeholder="…"` escritos a mano); el estado del
+  servidor XUAT («Activo (puerto …)», «Detener», «Iniciar», «Desactivado») y los mensajes del instalador de
+  XUAT; y **la ventana del área de captura del OCR entera** («Escaneo pausado», «Escaneando»…), que es otra
+  página con otro preload y nunca había tenido traducción. Ahora la ventana recibe sus textos del proceso
+  principal (mismo `i18n.js`) y los actualiza si cambias de idioma con ella abierta.
+- El ejemplo del campo «Traducción» del glosario decía «Hola» sea cual fuese el idioma; ahora es un ejemplo del
+  idioma de la interfaz.
 - `deepl_reset_instructions + ' ✓' || 'Reset ✓'` nunca podía llegar al `||` (concatenar con `undefined` da un
   texto, no un valor falso); ahora usa el mismo mecanismo que el resto.
 
@@ -24,6 +33,8 @@
 - `showToast()` acepta un texto o una función; helper `tt(clave, respaldo, vars)` que lee el idioma al momento
   de llamar. `scripts/test-toast-notices.js` pasa de 10 a 18 casos (cada defecto verificado reintroduciéndolo),
   incluida una guardia que falla si alguien vuelve a pasar un texto ya traducido a `showToast()`.
+- Bancos nuevos `scripts/test-i18n-placeholders.js` (2 casos: falla si aparece otro placeholder escrito a mano)
+  y `scripts/test-capture-area-i18n.js` (5 casos), con mutaciones verificadas.
 - Verificado con la app real recorriendo los 8 idiomas con notificaciones abiertas.
 
 ## [1.0.16] — Tuhua abre siempre en pausa (también en XUAT), y un icono de Ko-fi

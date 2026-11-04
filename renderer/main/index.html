@@ -448,12 +448,12 @@
                         <select id="llm-provider-select" onchange="onLlmProviderChange()" class="w-full p-2 rounded-md bg-white dark:bg-dark-900 border border-amber-200 dark:border-amber-800 text-xs cursor-pointer"></select>
                         <p id="llm-provider-beta-note" class="hidden text-xs text-amber-600 dark:text-amber-500 mt-1" data-i18n="llm_provider_beta_note">Esta API de compatibilidad es beta según la documentación del proveedor — puede cambiar sin aviso.</p>
                     </div>
-                    <input type="password" id="api-key" class="w-full p-2 rounded-md bg-white dark:bg-dark-900 border border-amber-200 dark:border-amber-800 text-xs font-mono transition-colors duration-200" placeholder="Pega tu Key aquí..." oninput="markUnsaved('sidebar')">
+                    <input type="password" id="api-key" class="w-full p-2 rounded-md bg-white dark:bg-dark-900 border border-amber-200 dark:border-amber-800 text-xs font-mono transition-colors duration-200" data-i18n-placeholder="api_key_placeholder" placeholder="Pega tu clave aquí..." oninput="markUnsaved('sidebar')">
                     <div id="api-key-status" class="hidden flex items-center gap-1.5 text-[11px] font-medium mt-1"></div>
                     <!-- v3.13.58: shown only when the 'custom' provider is selected — the table's own baseUrl is deliberately empty for it, see llm-providers.js. -->
                     <div id="llm-custom-baseurl-row" class="hidden mt-2">
                         <label class="block text-[10px] font-bold text-amber-700 dark:text-amber-500 uppercase mb-1" data-i18n="llm_base_url_label">URL Base</label>
-                        <input type="text" id="llm-custom-baseurl" class="w-full p-2 rounded-md bg-white dark:bg-dark-900 border border-amber-200 dark:border-amber-800 text-xs font-mono" placeholder="https://mi-gateway.ejemplo.com/v1" oninput="markUnsaved('sidebar')">
+                        <input type="text" id="llm-custom-baseurl" class="w-full p-2 rounded-md bg-white dark:bg-dark-900 border border-amber-200 dark:border-amber-800 text-xs font-mono" placeholder="https://your-gateway.example.com/v1" oninput="markUnsaved('sidebar')">
                     </div>
                     <!-- v3.13.58: free text (not a &lt;select&gt;, the model landscape
                          moves faster than Tuhua releases), populated per-provider by
@@ -529,7 +529,7 @@
                          resuelto" — Lyca lo reportó exactamente así. El texto
                          lo pinta renderLocalEndpointHint(). -->
                     <p id="local-endpoint-hint" class="hidden text-[10px] text-gray-400 -mt-1"></p>
-                    <input type="text" id="local-model" class="w-full p-2 rounded-md bg-gray-50 dark:bg-dark-900 border border-gray-300 dark:border-dark-600 text-xs font-mono" placeholder="Model name (e.g. llama3)" oninput="markUnsaved('sidebar')">
+                    <input type="text" id="local-model" class="w-full p-2 rounded-md bg-gray-50 dark:bg-dark-900 border border-gray-300 dark:border-dark-600 text-xs font-mono" data-i18n-placeholder="local_model_placeholder" placeholder="Model name (e.g. llama3)" oninput="markUnsaved('sidebar')">
                     <div id="local-endpoint-status" class="hidden flex items-center gap-1.5 text-[11px] font-medium mt-1"></div>
                 </div>
 
@@ -893,8 +893,8 @@
                 </div>
                 <!-- Add Entry Form -->
                 <div class="p-3 rounded-lg bg-gray-50 dark:bg-dark-900/50 border border-gray-200 dark:border-dark-600 space-y-2">
-                    <input type="text" id="glossary-source" class="w-full p-2 rounded-md bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-xs" placeholder="Source term (e.g. こんにちは)">
-                    <input type="text" id="glossary-target" class="w-full p-2 rounded-md bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-xs" placeholder="Target translation (e.g. Hola)">
+                    <input type="text" id="glossary-source" class="w-full p-2 rounded-md bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-xs" data-i18n-placeholder="glossary_source_placeholder" placeholder="Source term (e.g. こんにちは)">
+                    <input type="text" id="glossary-target" class="w-full p-2 rounded-md bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-xs" data-i18n-placeholder="glossary_target_placeholder" placeholder="Target translation (e.g. Hello)">
                     <div class="flex gap-2">
                         <select id="glossary-mode" class="flex-1 p-1.5 rounded-md bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-xs">
                             <option value="exact" data-i18n="mode_exact">Exact Match</option>
@@ -925,7 +925,7 @@
                 <div class="p-4 pb-2 space-y-2">
                     <h3 class="text-sm font-bold" data-i18n="history_title">Historial de Traducciones</h3>
                     <div class="flex gap-2">
-                        <input type="text" class="flex-1 p-1.5 rounded-md bg-gray-50 dark:bg-dark-900 border border-gray-300 dark:border-dark-600 text-xs" placeholder="Buscar..." oninput="filterHistory(this.value)">
+                        <input type="text" class="flex-1 p-1.5 rounded-md bg-gray-50 dark:bg-dark-900 border border-gray-300 dark:border-dark-600 text-xs" data-i18n-placeholder="history_search_placeholder" placeholder="Buscar..." oninput="filterHistory(this.value)">
                         <button onclick="clearHistory()" class="px-3 py-1.5 text-[10px] font-medium text-red-500 hover:text-red-400 border border-red-200 dark:border-red-800 rounded-md transition" data-i18n="history_clear">Limpiar</button>
                         <button onclick="exportHistory()" class="px-3 py-1.5 text-[10px] font-medium text-gray-500 hover:text-gray-800 dark:hover:text-white border border-gray-200 dark:border-dark-600 rounded-md transition" data-i18n="history_export">Exportar</button>
                     </div>
@@ -950,7 +950,7 @@
                 <!-- Action Buttons -->
                 <div>
                     <div class="flex gap-2">
-                        <input type="text" id="profile-name" oninput="clearProfileNameError()" class="flex-1 p-2 rounded-md bg-gray-50 dark:bg-dark-900 border border-gray-300 dark:border-dark-600 text-xs" placeholder="Nombre del perfil...">
+                        <input type="text" id="profile-name" oninput="clearProfileNameError()" class="flex-1 p-2 rounded-md bg-gray-50 dark:bg-dark-900 border border-gray-300 dark:border-dark-600 text-xs" data-i18n-placeholder="profile_name_placeholder" placeholder="Nombre del perfil...">
                         <button onclick="createNewProfile()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-md transition" data-i18n="profile_create">Crear Nuevo</button>
                     </div>
                     <p id="profile-name-error" class="hidden text-xs text-red-500 mt-1"></p>
@@ -1282,7 +1282,7 @@
                                 </optgroup>
                                 <option value="custom" data-i18n-font="custom_font">✏️ Personalizado...</option>
                             </select>
-                            <input type="text" id="custom-font-input" data-immediate="true" class="hidden w-full p-1.5 mt-1 rounded-md bg-gray-50 dark:bg-dark-900 border border-gray-300 dark:border-dark-600 text-xs font-mono" placeholder="Ej: 'MS Gothic', 'Noto Sans JP', sans-serif" onchange="saveOverlayImmediate()">
+                            <input type="text" id="custom-font-input" data-immediate="true" class="hidden w-full p-1.5 mt-1 rounded-md bg-gray-50 dark:bg-dark-900 border border-gray-300 dark:border-dark-600 text-xs font-mono" data-i18n-placeholder="custom_font_placeholder" placeholder="Ej: 'MS Gothic', 'Noto Sans JP', sans-serif" onchange="saveOverlayImmediate()">
                         </div>
                         <!-- Font Size -->
                         <div>

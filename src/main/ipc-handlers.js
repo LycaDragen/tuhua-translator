@@ -130,6 +130,19 @@ function mainT(store, key) {
   return dict[key] || key;
 }
 
+// v1.0.17: los textos de la ventana del área de captura del OCR. Esa ventana
+// no tiene acceso a las traducciones del renderer principal (es otra página,
+// con otro preload), así que sus textos salían siempre en español. Se le
+// entregan desde acá, con el mismo i18n.js y el mismo `uiLanguage` que usan
+// los diálogos nativos (mainT).
+const CAPTURE_STRING_KEYS = ['capture_paused', 'capture_scanning', 'capture_capturing', 'capture_recognizing',
+  'capture_error_capture', 'capture_error', 'capture_title_pause', 'capture_title_capture'];
+function captureStrings(store) {
+  const out = {};
+  for (const k of CAPTURE_STRING_KEYS) out[k] = mainT(store, k);
+  return out;
+}
+
 class IpcHandlers {
   constructor(store, pipeline, glossary, regexFilter, windowManager, textractor, clipboardWatcher, textractorLauncher, ocrService, xuatServer, shortcutManager, hookCleaningSettings, profileStore, textractorAutoDetectResult, updateChecker) {
     this.store = store;
@@ -253,6 +266,8 @@ class IpcHandlers {
     // v1.0.16: el icono de Ko-fi de la barra superior. Mismo patrón que
     // open-docs-link: el destino es un literal fijo acá, no una URL que sube
     // el renderer — no se expone ningún "abrir URL arbitraria".
+    ipcMain.handle('get-capture-strings', () => captureStrings(this.store));
+
     ipcMain.handle('open-kofi-link', () => {
       shell.openExternal('https://ko-fi.com/lycadragen');
       return { success: true };
@@ -318,6 +333,11 @@ class IpcHandlers {
       }
       const mergedSettings = { ...currentSettings, ...data };
       this.store.set(mergedSettings);
+      // v1.0.17: si cambió el idioma de la interfaz, la ventana de captura
+      // del OCR (si está abierta) recibe los textos nuevos.
+      if (data.uiLanguage !== undefined) {
+        this.windowManager.sendToCaptureArea('shortcut-pressed', { action: 'ui-strings', strings: captureStrings(this.store) });
+      }
 
       // Update translation pipeline with new settings
       this.pipeline.updateSettings(mergedSettings);
@@ -2934,7 +2954,7 @@ class IpcHandlers {
       'ocr-toggle-scan',
       'textractor-browse-cli', 'textractor-clear-cli-path', 'textractor-launch',
       'list-game-processes', 'inspect-game', 'set-profile-game', 'find-profile-by-title', 'scan-known-games', 'get-textractor-auto-detect-result',
-      'open-docs-link', 'open-mail-link', 'open-kofi-link',
+      'open-docs-link', 'open-mail-link', 'open-kofi-link', 'get-capture-strings',
       'textractor-kill', 'textractor-cli-status',
       'textractor-select-hook', 'textractor-test-cli', 'resize-overlay', 'get-debug-logs',
       'xuat-start-server', 'xuat-stop-server', 'xuat-get-status',

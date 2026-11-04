@@ -247,6 +247,23 @@
         // chance to reposition the region before anything gets scanned.
         let isScanPaused = true;
 
+        // v1.0.17: textos en el idioma de la interfaz. Se piden al proceso
+        // principal (ver captureStrings() en ipc-handlers.js) y se actualizan
+        // si el usuario cambia de idioma con esta ventana abierta. Mientras
+        // llegan, rige el español original.
+        let S = {
+            capture_paused: 'Escaneo pausado', capture_scanning: 'Escaneando', capture_capturing: 'Capturando...',
+            capture_recognizing: 'Reconociendo...', capture_error_capture: 'Error al capturar', capture_error: 'Error',
+            capture_title_pause: 'Pausar/Reanudar escaneo', capture_title_capture: 'Capturar ahora'
+        };
+        let currentStatus = { state: 'paused', key: 'capture_paused' };
+        function applyStrings(strings) {
+            S = Object.assign({}, S, strings || {});
+            document.getElementById('btn-pause').title = S.capture_title_pause;
+            document.getElementById('btn-capture').title = S.capture_title_capture;
+            updateStatusKey(currentStatus.state, currentStatus.key);
+        }
+
         // ===== TOGGLE SCAN PAUSE/RESUME =====
         function toggleScan() {
             if (api && api.ocrToggleScan) {
@@ -261,12 +278,12 @@
                             btn.classList.add('paused');
                             region.classList.add('paused');
                             region.classList.remove('capturing');
-                            updateStatus('paused', 'Escaneo pausado');
+                            updateStatusKey('paused', 'capture_paused');
                         } else {
                             btn.textContent = '⏸';
                             btn.classList.remove('paused');
                             region.classList.remove('paused');
-                            updateStatus('idle', 'Escaneando');
+                            updateStatusKey('idle', 'capture_scanning');
                         }
                     }
                 });
@@ -275,23 +292,28 @@
 
         // ===== MANUAL CAPTURE =====
         function manualCapture() {
-            updateStatus('capturing', 'Capturando...');
+            updateStatusKey('capturing', 'capture_capturing');
             if (api && api.ocrCapture) {
                 api.ocrCapture().then(result => {
                     if (result && result.success) {
-                        updateStatus(isScanPaused ? 'paused' : 'idle', isScanPaused ? 'Escaneo pausado' : 'Escaneando');
+                        updateStatusKey(isScanPaused ? 'paused' : 'idle', isScanPaused ? 'capture_paused' : 'capture_scanning');
                     } else {
-                        updateStatus('error', 'Error al capturar');
-                        setTimeout(() => updateStatus(isScanPaused ? 'paused' : 'idle', isScanPaused ? 'Escaneo pausado' : 'Escaneando'), 2000);
+                        updateStatusKey('error', 'capture_error_capture');
+                        setTimeout(() => updateStatusKey(isScanPaused ? 'paused' : 'idle', isScanPaused ? 'capture_paused' : 'capture_scanning'), 2000);
                     }
                 }).catch(() => {
-                    updateStatus('error', 'Error');
-                    setTimeout(() => updateStatus(isScanPaused ? 'paused' : 'idle', isScanPaused ? 'Escaneo pausado' : 'Escaneando'), 2000);
+                    updateStatusKey('error', 'capture_error');
+                    setTimeout(() => updateStatusKey(isScanPaused ? 'paused' : 'idle', isScanPaused ? 'capture_paused' : 'capture_scanning'), 2000);
                 });
             }
         }
 
         // ===== STATUS UPDATE =====
+        function updateStatusKey(state, key) {
+            currentStatus = { state, key };
+            updateStatus(state, S[key] || key);
+        }
+
         function updateStatus(state, text) {
             const indicator = document.getElementById('status-indicator');
             const dot = indicator.querySelector('.dot');
@@ -304,24 +326,27 @@
         // ===== LISTEN FOR EVENTS FROM MAIN PROCESS =====
         if (api) {
             api.onShortcut((data) => {
-                if (data.action === 'ocr-status') {
+                if (data.action === 'ui-strings') {
+                    applyStrings(data.strings);
+                } else if (data.action === 'ocr-status') {
                     if (data.state === 'recognizing') {
                         if (!isScanPaused) {
-                            updateStatus('capturing', 'Reconociendo...');
+                            updateStatusKey('capturing', 'capture_recognizing');
                         }
                     } else if (data.state === 'ready' || data.state === 'auto-capturing') {
                         if (!isScanPaused) {
-                            updateStatus('idle', 'Escaneando');
+                            updateStatusKey('idle', 'capture_scanning');
                         }
                     } else if (data.state === 'error') {
-                        updateStatus('error', 'Error');
+                        updateStatusKey('error', 'capture_error');
                     }
                 }
             });
         }
 
         // Initialize status — matches isScanPaused=true above.
-        updateStatus('paused', 'Escaneo pausado');
+        updateStatusKey('paused', 'capture_paused');
+        if (api && api.getCaptureStrings) api.getCaptureStrings().then(applyStrings).catch(() => {});
     </script>
 </body>
 </html>
