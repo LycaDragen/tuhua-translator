@@ -41,6 +41,8 @@ Go to the [Releases](https://github.com/LycaDragen/Tuhua_Translator/releases) pa
 | Linux | `.AppImage` | Portable, no installation needed |
 | macOS | `.dmg` | Apple Silicon only (M1/M2/M3/M4) — drag to Applications. **Untested**: the build is produced by CI but nobody has run it on a Mac yet |
 
+The Windows and Linux builds are also available on [itch.io](https://lycaxdragen.itch.io/tuhua-translator), updated with every release.
+
 > **The installers are not signed** (there's no developer certificate yet). Windows will show a SmartScreen warning ("More info" → "Run anyway"), and on macOS Gatekeeper will block the first launch (right-click → "Open"). This is expected — the source code is public, and you can review it in this very repo.
 
 ### Updates
