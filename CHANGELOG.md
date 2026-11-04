@@ -18,6 +18,9 @@
 
 ### Interno
 
+- **README en inglés.** `README.md` pasa a ser la versión en inglés y el español se mueve a `README.es.md`
+  (cada uno enlaza al otro arriba). Además: nota de que macOS está sin probar, y la licencia explicada como
+  «código público» (CC BY-NC no es una licencia de código abierto en sentido estricto).
 - `showToast()` acepta un texto o una función; helper `tt(clave, respaldo, vars)` que lee el idioma al momento
   de llamar. `scripts/test-toast-notices.js` pasa de 10 a 18 casos (cada defecto verificado reintroduciéndolo),
   incluida una guardia que falla si alguien vuelve a pasar un texto ya traducido a `showToast()`.
